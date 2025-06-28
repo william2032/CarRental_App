@@ -14,7 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from '../users/dtos/auth.dto';
 import { RegisterUserDto } from '../users/dtos';
 import { UserResponse } from '../users/interfaces/user.interface';
-import {MailerService} from "../mailer/mailer.service";
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -108,6 +108,18 @@ export class AuthService implements IAuthService {
       role: user.role,
     };
     return this.jwtService.sign(payload);
+  }
+
+  async verifyPayloadAndGetUser(
+    payload: JwtPayload,
+  ): Promise<UserResponse | null> {
+    const user = await this.userService.findOne(payload.sub);
+
+    if (!user || user.email !== payload.email || user.role !== payload.role) {
+      return null;
+    }
+
+    return user;
   }
 
   async verifyToken(token: string): Promise<JwtPayload> {

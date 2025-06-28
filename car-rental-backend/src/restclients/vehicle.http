@@ -1,20 +1,55 @@
-//create a new vehicles
-POST /vehicles HTTP/1.1
+@baseUrl = http://localhost:3000
+@customertoken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNnM3Npc2IwMDAwdGJ5azdreTVsdmN5IiwiZW1haWwiOiJsdWtlYmV0aWthQGdtYWlsLmNvbSIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc1MTEwNjgyOCwiZXhwIjoxNzUxMTkzMjI4fQ.3MlC-VmTdyLxkgibJXDP7ZEpViUt4L97wAN24VoZAD0
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWNtcm0wMDAxdGJsb3JtaWF5dHdnIiwiZW1haWwiOiJhZG1pbkBzaG9waWUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUxMTA2Mjc2LCJleHAiOjE3NTExOTI2NzZ9.3Gz3dlkjSqwge-BE-aeXpQfQDlOd_xSZiGV6HDXLyWk
+
+@vehicleId = cmce7pnd50001tbww0o7nimx0
+### Create Vehicle (ADMIN or AGENT only)
+POST {{baseUrl}}/vehicles
 Host: your-api.com
 Content-Type: application/json
+Authorization: Bearer {{customertoken}}
 
 {
   "make": "Toyota",
-  "model": "Camry",
-  "year": 2023,
-  "fuelType": "PETROL",
-  "category": "SEDAN",
-  "transmission": "AUTOMATIC",
-  "pricePerDay": 50.00,
-  "pricePerHour": 10.00,
+  "model": "Corolla",
+  "year": 2022,
+  "color": "Blue",
   "mileage": 15000,
-  "features": ["GPS", "Bluetooth", "Air Conditioning"],
-  "images": ["https://example.com/image1.jpg"],
-  "isAvailable": true,
-  "condition": "EXCELLENT"
+  "registrationNumber": "KDA123X",
+  "fuelType": "PETROL",
+  "vehicleType": "SEDAN",
+  "transmissionType": "AUTOMATIC",
+  "condition": "EXCELLENT",
+  "pricePerDay": 45.99,
+  "availability": true
 }
+
+###
+
+### Get All Vehicles (ANY ROLE)
+GET http://localhost:3000/vehicles
+Authorization: Bearer {{customertoken}}
+
+###
+
+### Get One Vehicle (ANY ROLE)
+GET http://localhost:3000/vehicles/{{vehicleId}}
+Authorization: Bearer {{customertoken}}
+
+###
+
+### Update Vehicle (ADMIN or AGENT only)
+PATCH http://localhost:3000/vehicles/{{vehicleId}}
+Content-Type: application/json
+Authorization: Bearer {{customertoken}}
+
+{
+  "fuelType": "PETROL",
+  "pricePerDay": 49.99
+}
+
+###
+
+### Delete Vehicle (ADMIN only)
+DELETE http://localhost:3000/vehicles/{{vehicleId}}
+Authorization: Bearer {{adminToken}}

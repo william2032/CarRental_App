@@ -14,13 +14,17 @@ import {
   LoginResponse,
   RegisterResponse,
 } from '../users/interfaces/auth.interface';
-import {ForgotPasswordDto, LoginUserDto, ResetPasswordDto} from '../users/dtos/auth.dto';
+import {
+  ForgotPasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+} from '../users/dtos/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PasswordResetService } from './services/password-reset.service';
 import { RegisterUserDto } from '../users/dtos';
 import { AuthRequest } from '../common/interface/auth-request.interface';
 import { UserResponse } from '../users/interfaces/user.interface';
-import {ApiOperation, ApiResponse} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -53,6 +57,7 @@ export class AuthController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   getProfile(@Request() req: AuthRequest): {
     message: string;
     user: UserResponse;
@@ -91,6 +96,7 @@ export class AuthController {
    */
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   logout(): {
     message: string;
@@ -103,6 +109,7 @@ export class AuthController {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Request password reset' })
   @ApiResponse({ status: 200, description: 'Password reset email sent' })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -112,6 +119,7 @@ export class AuthController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Reset password with token' })
   @ApiResponse({ status: 200, description: 'Password reset successfully' })
   @ApiResponse({ status: 400, description: 'Invalid token or password' })

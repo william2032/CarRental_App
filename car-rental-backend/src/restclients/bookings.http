@@ -5,14 +5,14 @@
 
 ### Authentication Tokens (Replace with actual tokens)
 @adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWNtcm0wMDAxdGJsb3JtaWF5dHdnIiwiZW1haWwiOiJhZG1pbkBzaG9waWUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUxMDg1NDg1LCJleHAiOjE3NTExNzE4ODV9.t-bULz3hidEC8MOwu_yCs-4M_2_Nh95oIPl3NNNaXoA
-@agentToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNmcjU1bnUwMDBhdGIzNHFuZHo2ejU0IiwiZW1haWwiOiJhZ2VudEBjYXJlbnRhbC5jb20iLCJyb2xlIjoiQUdFTlQiLCJpYXQiOjE3NTEwODU1ODEsImV4cCI6MTc1MTE3MTk4MX0.FvmA6RXCl-XwuIClgTBudZui6ITAWKkkaJxaJz0iFF0
-@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWF2MzQwMDAwdGJsb3JzMjBtZWZ4IiwiZW1haWwiOiJjdXN0b21lckBleGFtcGxlLmNvbSIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc1MTA4NDU5MSwiZXhwIjoxNzUxMTcwOTkxfQ.IWiH_gosWuhRGmqA4gKjBCiT3RoIftHmfBlUIV2PKqM
+@agentToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNnZG5jcDEwMDAxdGJiNHdncXRoYm94IiwiZW1haWwiOiJ3NDEzMTQzNDNAZ21haWwuY29tIiwicm9sZSI6IkFHRU5UIiwiaWF0IjoxNzUxMTIzMzg0LCJleHAiOjE3NTEyMDk3ODR9.EGyOoz_wejLVFOxbzw6VOAHy7FRmpQ22O6DdbRV1qs4
+@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNnY3NzOHIwMDA2dGJuczNpMnJibGVoIiwiZW1haWwiOiJ3YW5qaXJ1bmRpcmFuZ3UxMTJAZ21haWwuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzUxMTIxOTU3LCJleHAiOjE3NTEyMDgzNTd9.X4efcLpddpdJnp55a99WzXZcnrzMRgt4ZmXJf5d7Zao
 
 ### Test Data IDs (Replace with actual IDs from your database)
-@vehicleId = cmce8a3zn0003tb68qc7j139y
-@customerId = cmceaav340000tblors20mefx
+@vehicleId = cmce89dpe0001tb6876v42aht
+@customerId = cmcgcss8r0006tbns3i2rbleh
 @locationId = cmce7i2ho0001tbb84609tjmd
-@bookingId = cmcfqy3fk0007tb34w8rxfowk
+@bookingId = cmcgc6ed10001tbnsfdj8qa5m
 
 ###
 ### 1. CUSTOMER WORKFLOWS
@@ -134,7 +134,7 @@ Authorization: Bearer {{agentToken}}
 
 ### Agent - Update any booking
 PATCH {{baseUrl}}/bookings/{{bookingId}}
-Authorization: Bearer {{agentToken}}
+Authorization: Bearer {{adminToken}}
 Content-Type: {{contentType}}
 
 {

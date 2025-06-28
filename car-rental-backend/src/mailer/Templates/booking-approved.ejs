@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Booking Approved</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .booking-details {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎉 Booking Approved!</h1>
+    </div>
+    <div class="content">
+        <p>Dear <%= customerName %>,</p>
+        <p>Great news! Your booking has been approved and confirmed.</p>
+
+        <div class="booking-details">
+            <h3>Confirmed Booking Details</h3>
+            <p><strong>Booking Number:</strong> <%= bookingNumber %></p>
+            <p><strong>Vehicle:</strong> <%= vehicleName %> <%= vehicleModel %></p>
+            <p><strong>Start Date:</strong> <%= startDate %></p>
+            <p><strong>End Date:</strong> <%= endDate %></p>
+            <p><strong>Total Amount:</strong> <%= totalAmount %></p>
+            <% if (locationName) { %>
+                <p><strong>Location:</strong> <%= locationName %></p>
+            <% } %>
+        </div>
+
+        <p>Your vehicle is now reserved for the specified dates. Please proceed with payment to complete your
+            booking.</p>
+        <p>
+            <a href="<%= paymentUrl %>" class="button">Make Payment</a>
+            <a href="<%= bookingUrl %>" class="button" style="background-color: #2196F3;">View Booking</a>
+        </p>
+    </div>
+    <div class="footer">
+        <p>If you have any questions, please contact us at <%= supportEmail %></p>
+    </div>
+</div>
+</body>
+</html>

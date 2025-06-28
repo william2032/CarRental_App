@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {BookingEmailData, MailerService} from '../mailer/mailer.service';
+import { BookingEmailData, MailerService } from '../mailer/mailer.service';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { $Enums, Prisma } from '../../generated/prisma';
 import UserRole = $Enums.UserRole;
@@ -28,7 +28,7 @@ export class BookingsService {
     userId: string,
     userRole: UserRole,
   ): Promise<BookingWithRelations> {
-    this.validateCustomerPermissions(userRole, createBookingDto.userId, userId);
+    this.validateCustomerPermissions(userRole, userId, userId);
 
     await this.validateEntitiesExist(createBookingDto);
 
@@ -261,7 +261,7 @@ export class BookingsService {
     // Send approval email
     await this.sendBookingApprovalEmail(updatedBooking);
 
-    return updatedBooking  as BookingWithRelations;
+    return updatedBooking as BookingWithRelations;
   }
 
   /**
@@ -300,7 +300,7 @@ export class BookingsService {
     // Send rejection email
     await this.sendBookingRejectionEmail(updatedBooking, reason);
 
-    return updatedBooking  as BookingWithRelations;
+    return updatedBooking as BookingWithRelations;
   }
 
   // Email sending methods
@@ -403,7 +403,9 @@ export class BookingsService {
     }
   }
 
-  private mapBookingToEmailData(booking: BookingWithRelations): BookingEmailData {
+  private mapBookingToEmailData(
+    booking: BookingWithRelations,
+  ): BookingEmailData {
     return {
       bookingNumber: booking.bookingNumber,
       customerName: booking.user.name,

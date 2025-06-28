@@ -9,11 +9,13 @@ import {
   HttpStatus,
   HttpCode,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dtos';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -24,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateUserResponseDto, ErrorResponseDto } from './interfaces';
 import { UserResponse } from './interfaces/user.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -31,6 +34,8 @@ export class UsersController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new user',
@@ -82,6 +87,8 @@ export class UsersController {
    * GET /users
    */
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get all users',
     description: 'Retrieve a list of all users. Admin access required.',
@@ -104,6 +111,8 @@ export class UsersController {
    * GET /users/:id
    */
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get user by ID',
     description:
@@ -132,6 +141,8 @@ export class UsersController {
    * PATCH /users/:id
    */
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update user information',
     description:
@@ -163,6 +174,8 @@ export class UsersController {
    * DELETE /users/:id
    */
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete user account',

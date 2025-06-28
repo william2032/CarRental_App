@@ -30,7 +30,7 @@ import { Roles } from '../auth/decorators/role-decorator';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { UpdateBookingDto } from './dtos/update-bookings.dto';
 import { Request } from 'express';
-import {Booking} from "./interfaces/bookings.interface";
+import { Booking } from './interfaces/bookings.interface';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -46,7 +46,7 @@ export class BookingsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER)
+  @Roles(UserRole.ADMIN, UserRole.CUSTOMER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new booking' })
   @ApiResponse({
@@ -132,7 +132,7 @@ export class BookingsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER) // Allow customers to delete their own bookings
+  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a booking by ID' })
   @ApiParam({ name: 'id', description: 'Booking ID', type: String })

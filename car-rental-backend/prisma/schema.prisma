@@ -92,7 +92,7 @@ model Booking {
   totalAmount          Decimal                @db.Decimal(10, 2)
   // status
   status               BookingStatus          @default(PENDING)
-  type                 BookingType            @default(INSTANT)
+  type                 BookingType            @default(REQUEST)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   payment              PaymentMethod?

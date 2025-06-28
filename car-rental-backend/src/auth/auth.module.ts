@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt-strategies';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PasswordResetService } from './services/password-reset.service';
-import {AppMailerModule} from "../mailer/mailer.module";
+import { AppMailerModule } from '../mailer/mailer.module';
 
 @Module({
   imports: [
