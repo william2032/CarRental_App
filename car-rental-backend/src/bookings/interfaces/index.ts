@@ -1,2 +1,1 @@
-export { BookingResponse } from './booking-response.interface';
-export { Booking } from './bookings.interface';
+export { BookingWithRelations } from './get-booking-data.interface';

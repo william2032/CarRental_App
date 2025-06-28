@@ -1,4 +1,6 @@
-import { Prisma, $Enums } from '../../../generated/prisma';
+import { $Enums, Prisma } from '../../../generated/prisma';
+
+// Import enums from Prisma
 import PaymentStatus = $Enums.PaymentStatus;
 import BookingStatus = $Enums.BookingStatus;
 import BookingType = $Enums.BookingType;
@@ -7,10 +9,10 @@ import VehicleType = $Enums.VehicleType;
 import TransmissionType = $Enums.TransmissionType;
 import VehicleCondition = $Enums.VehicleCondition;
 import UserRole = $Enums.UserRole;
-import PaymentMethodType = $Enums.PaymentMethodType;
 import Decimal = Prisma.Decimal;
+import PaymentMethodType = $Enums.PaymentMethodType;
 
-export interface Booking {
+export interface BookingWithRelations {
   id: string;
   createdAt: Date;
   updatedAt: Date;
@@ -35,6 +37,7 @@ export interface Booking {
     name: string;
     phone: string | null;
     profilePicture: string | null;
+    address: string | null;
     city: string | null;
     country: string | null;
   };

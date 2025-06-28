@@ -6,7 +6,7 @@ import {
   IsString,
   IsEnum,
 } from 'class-validator';
-import {$Enums} from "../../../generated/prisma";
+import { $Enums } from '../../../generated/prisma';
 import BookingStatus = $Enums.BookingStatus;
 
 export class CreateBookingDto {

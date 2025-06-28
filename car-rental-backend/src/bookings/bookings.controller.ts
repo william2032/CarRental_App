@@ -23,20 +23,18 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserRole } from 'generated/prisma';
-import { Booking } from './interfaces';
+import { BookingWithRelations } from './interfaces';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/role-decorator';
 import { CreateBookingDto } from './dtos/create-booking.dto';
 import { UpdateBookingDto } from './dtos/update-bookings.dto';
 import { Request } from 'express';
+import {Booking} from "./interfaces/bookings.interface";
 
 interface AuthenticatedRequest extends Request {
   user: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
+    userId: string;
     role: UserRole;
   };
 }
@@ -63,10 +61,10 @@ export class BookingsController {
   create(
     @Body() createBookingDto: CreateBookingDto,
     @Req() req: AuthenticatedRequest,
-  ): Promise<Booking> {
+  ): Promise<BookingWithRelations> {
     return this.bookingsService.create(
       createBookingDto,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
   }
@@ -83,7 +81,7 @@ export class BookingsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   findAll(@Req() req: AuthenticatedRequest): Promise<Booking[]> {
-    return this.bookingsService.findAll(req.user.id, req.user.role);
+    return this.bookingsService.findAll(req.user.userId, req.user.role);
   }
 
   @Get(':id')
@@ -99,7 +97,7 @@ export class BookingsController {
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<Booking> {
-    return this.bookingsService.findOne(id, req.user.id, req.user.role);
+    return this.bookingsService.findOne(id, req.user.userId, req.user.role);
   }
 
   @Patch(':id')
@@ -127,7 +125,7 @@ export class BookingsController {
     return this.bookingsService.update(
       id,
       updateBookingDto,
-      req.user.id,
+      req.user.userId,
       req.user.role,
     );
   }
@@ -147,7 +145,7 @@ export class BookingsController {
     @Param('id') id: string,
     @Req() req: AuthenticatedRequest,
   ): Promise<void> {
-    return this.bookingsService.remove(id, req.user.id, req.user.role);
+    return this.bookingsService.remove(id, req.user.userId, req.user.role);
   }
 
   @Patch(':id/cancel')
@@ -180,9 +178,57 @@ export class BookingsController {
   ): Promise<Booking> {
     return this.bookingsService.cancelBooking(
       id,
-      req.user.id,
+      req.user.userId,
       req.user.role,
       body.reason,
+    );
+  }
+
+  /**
+   * Approve a booking (Admin/Agent only)
+   */
+  @Post(':id/approve')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.AGENT)
+  @HttpCode(HttpStatus.OK)
+  approve(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.bookingsService.approveBooking(
+      id,
+      req.user.userId,
+      req.user.role,
+    );
+  }
+
+  /**
+   * Reject a booking (Admin/Agent only)
+   */
+  @Post(':id/reject')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.AGENT)
+  @HttpCode(HttpStatus.OK)
+  reject(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+    @Body('reason') reason?: string,
+  ) {
+    return this.bookingsService.rejectBooking(
+      id,
+      req.user.userId,
+      req.user.role,
+      reason,
+    );
+  }
+
+  /**
+   * Get pending bookings (Admin/Agent only)
+   */
+  @Get('status/pending')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.AGENT)
+  getPendingBookings(@Req() req: AuthenticatedRequest) {
+    return this.bookingsService.findPendingBookings(
+      req.user.userId,
+      req.user.role,
     );
   }
 }
