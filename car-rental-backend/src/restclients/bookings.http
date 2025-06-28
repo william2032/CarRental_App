@@ -1,0 +1,419 @@
+### Booking API Test Cases
+### Base URL
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Authentication Tokens (Replace with actual tokens)
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWNtcm0wMDAxdGJsb3JtaWF5dHdnIiwiZW1haWwiOiJhZG1pbkBzaG9waWUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUxMDg1NDg1LCJleHAiOjE3NTExNzE4ODV9.t-bULz3hidEC8MOwu_yCs-4M_2_Nh95oIPl3NNNaXoA
+@agentToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNmcjU1bnUwMDBhdGIzNHFuZHo2ejU0IiwiZW1haWwiOiJhZ2VudEBjYXJlbnRhbC5jb20iLCJyb2xlIjoiQUdFTlQiLCJpYXQiOjE3NTEwODU1ODEsImV4cCI6MTc1MTE3MTk4MX0.FvmA6RXCl-XwuIClgTBudZui6ITAWKkkaJxaJz0iFF0
+@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWF2MzQwMDAwdGJsb3JzMjBtZWZ4IiwiZW1haWwiOiJjdXN0b21lckBleGFtcGxlLmNvbSIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc1MTA4NDU5MSwiZXhwIjoxNzUxMTcwOTkxfQ.IWiH_gosWuhRGmqA4gKjBCiT3RoIftHmfBlUIV2PKqM
+
+### Test Data IDs (Replace with actual IDs from your database)
+@vehicleId = cmce8a3zn0003tb68qc7j139y
+@customerId = cmceaav340000tblors20mefx
+@locationId = cmce7i2ho0001tbb84609tjmd
+@bookingId = cmcfqy3fk0007tb34w8rxfowk
+
+###
+### 1. CUSTOMER WORKFLOWS
+###
+
+### Customer - Create a new booking for themselves
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "locationId": "{{locationId}}",
+  "startDate": "2025-07-01T09:00:00.000Z",
+  "endDate": "2025-07-03T17:00:00.000Z",
+  "baseAmount": 150.00,
+  "totalAmount": 150.00,
+  "status": "PENDING"
+}
+
+###
+
+### Customer - Try to create booking for another user (Should fail)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "different-user-id",
+  "vehicleId": "{{vehicleId}}",
+  "locationId": "{{locationId}}",
+  "startDate": "2025-07-01T09:00:00.000Z",
+  "endDate": "2025-07-03T17:00:00.000Z",
+  "baseAmount": 150.00,
+  "totalAmount": 150.00
+}
+
+###
+
+### Customer - Get all their bookings
+GET {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Customer - Get specific booking by ID
+GET {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Customer - Update their own booking (dates only)
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "startDate": "2025-07-02T09:00:00.000Z",
+  "endDate": "2025-07-04T17:00:00.000Z"
+}
+
+###
+
+### Customer - Try to update restricted fields (Should fail)
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "CONFIRMED",
+  "baseAmount": 200.00
+}
+
+###
+
+### Customer - Cancel their booking
+PATCH {{baseUrl}}/bookings/{{bookingId}}/cancel
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "reason": "Plans changed"
+}
+
+###
+
+### Customer - Delete their pending booking
+DELETE {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{customerToken}}
+
+### 2. AGENT WORKFLOWS
+
+
+### Agent - Create booking for any customer
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "locationId": "{{locationId}}",
+  "startDate": "2025-07-05T10:00:00.000Z",
+  "endDate": "2025-07-07T16:00:00.000Z",
+  "baseAmount": 200.00,
+  "discountAmount": 20.00,
+  "totalAmount": 180.00,
+  "status": "CONFIRMED"
+}
+
+###
+
+### Agent - Get all bookings (should see all)
+GET {{baseUrl}}/bookings
+Authorization: Bearer {{agentToken}}
+
+###
+
+### Agent - Update any booking
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "CONFIRMED",
+  "discountAmount": 25.00,
+  "totalAmount": 175.00
+}
+
+###
+
+### Agent - Cancel booking with reason
+PATCH {{baseUrl}}/bookings/{{bookingId}}/cancel
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "reason": "Vehicle maintenance required"
+}
+
+###
+
+###
+### 3. ADMIN WORKFLOWS
+###
+
+### Admin - Create booking with all permissions
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "locationId": "{{locationId}}",
+  "startDate": "2025-07-10T08:00:00.000Z",
+  "endDate": "2025-07-12T18:00:00.000Z",
+  "baseAmount": 300.00,
+  "discountAmount": 50.00,
+  "totalAmount": 250.00,
+  "status": "ACTIVE"
+}
+
+###
+
+### Admin - Get all bookings
+GET {{baseUrl}}/bookings
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Admin - Update any booking with full permissions
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: {{contentType}}
+
+{
+  "vehicleId": "{{vehicleId}}",
+  "status": "ACTIVE",
+  "baseAmount": 350.00,
+  "totalAmount": 300.00
+}
+
+###
+
+### Admin - Delete any booking (hard delete)
+DELETE {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{adminToken}}
+
+###
+
+###
+### 4. ERROR SCENARIOS
+###
+
+### Create booking with invalid vehicle ID
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "invalid-vehicle-id",
+  "startDate": "2025-07-01T09:00:00.000Z",
+  "endDate": "2025-07-03T17:00:00.000Z",
+  "baseAmount": 150.00,
+  "totalAmount": 150.00
+}
+
+###
+
+### Create booking with conflicting dates
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-01T09:00:00.000Z",
+  "endDate": "2025-07-03T17:00:00.000Z",
+  "baseAmount": 150.00,
+  "totalAmount": 150.00
+}
+
+###
+
+### Create booking with invalid date range (end before start)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-03T09:00:00.000Z",
+  "endDate": "2025-07-01T17:00:00.000Z",
+  "baseAmount": 150.00,
+  "totalAmount": 150.00
+}
+
+###
+
+### Try to access booking without authentication
+GET {{baseUrl}}/bookings/{{bookingId}}
+
+###
+
+### Try to access another user's booking as customer
+GET {{baseUrl}}/bookings/different-booking-id
+Authorization: Bearer {{customerToken}}
+
+###
+
+### Try to cancel already cancelled booking
+PATCH {{baseUrl}}/bookings/{{bookingId}}/cancel
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "reason": "Double cancellation test"
+}
+
+###
+
+### Try to cancel active booking
+PATCH {{baseUrl}}/bookings/active-booking-id/cancel
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "reason": "Should not work for active booking"
+}
+
+###
+
+###
+### 5. VALIDATION TESTS
+###
+
+### Create booking with missing required fields
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-01T09:00:00.000Z"
+}
+
+###
+
+### Create booking with invalid amount (negative)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-01T09:00:00.000Z",
+  "endDate": "2025-07-03T17:00:00.000Z",
+  "baseAmount": -50.00,
+  "totalAmount": -50.00
+}
+
+###
+
+### Update booking with invalid status
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "INVALID_STATUS"
+}
+
+###
+
+###
+### 6. EDGE CASES
+###
+
+### Create booking for same vehicle with adjacent dates (should work)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-03T17:00:00.000Z",
+  "endDate": "2025-07-05T09:00:00.000Z",
+  "baseAmount": 100.00,
+  "totalAmount": 100.00
+}
+
+###
+
+### Create booking with discount greater than base amount
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-15T09:00:00.000Z",
+  "endDate": "2025-07-16T17:00:00.000Z",
+  "baseAmount": 100.00,
+  "discountAmount": 150.00,
+  "totalAmount": 0.00
+}
+
+###
+
+### Create booking without location (optional field)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{customerToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{customerId}}",
+  "vehicleId": "{{vehicleId}}",
+  "startDate": "2025-07-20T09:00:00.000Z",
+  "endDate": "2025-07-21T17:00:00.000Z",
+  "baseAmount": 75.00,
+  "totalAmount": 75.00
+}
+
+###
+
+### Update booking to change vehicle (should check availability)
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{agentToken}}
+Content-Type: {{contentType}}
+
+{
+  "vehicleId": "cmce7pnd50001tbww0o7nimx0"
+}
+
+###
+
+###
+### 7. BULK OPERATIONS (if implemented)
+###
+
+### Get bookings with filters (by status)
+GET {{baseUrl}}/bookings?status=PENDING
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Get bookings with date range filter
+GET {{baseUrl}}/bookings?startDate=2025-07-01&endDate=2025-07-31
+Authorization: Bearer {{adminToken}}
+
+###
+
+### Get bookings for specific vehicle
+GET {{baseUrl}}/bookings?vehicleId={{vehicleId}}
+Authorization: Bearer {{adminToken}}
+

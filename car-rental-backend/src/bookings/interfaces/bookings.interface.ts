@@ -1,5 +1,6 @@
 import { $Enums } from '../../../generated/prisma';
 import BookingStatus = $Enums.BookingStatus;
+import { Decimal } from 'generated/prisma/runtime/library';
 
 export interface Booking {
   id: string;
@@ -8,11 +9,21 @@ export interface Booking {
   vehicleId: string;
   startDate: Date;
   endDate: Date;
-  baseAmount: number;
-  discountAmount: number;
-  totalAmount: number;
+  baseAmount: Decimal;
+  discountAmount: Decimal;
+  totalAmount: Decimal;
   status: BookingStatus;
   createdAt: Date;
   updatedAt: Date;
-  locationId?: string;
+  locationId?: string | null;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+  };
+  vehicle?: any;
+  Location?: any;
+  bookingStatusHistory?: any[];
+  payment?: any;
 }

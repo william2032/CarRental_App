@@ -9,12 +9,11 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
-  Request,
+  HttpCode,
+  HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
-import { CreateBookingDto } from './dto/create-booking.dto';
-import { UpdateBookingDto } from './dto/update-booking.dto';
-import { Booking } from './interfaces/booking.interface';
 import {
   ApiTags,
   ApiResponse,
@@ -24,10 +23,23 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserRole } from 'generated/prisma';
-import { BookingResponse } from './interfaces';
-import {RolesGuard} from "../auth/guards/roles.guard";
-import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
-import {Roles} from "../auth/decorators/role-decorator";
+import { Booking } from './interfaces';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Roles } from '../auth/decorators/role-decorator';
+import { CreateBookingDto } from './dtos/create-booking.dto';
+import { UpdateBookingDto } from './dtos/update-bookings.dto';
+import { Request } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    role: UserRole;
+  };
+}
 
 @ApiTags('Bookings')
 @Controller('bookings')
@@ -50,7 +62,7 @@ export class BookingsController {
   @UsePipes(new ValidationPipe())
   create(
     @Body() createBookingDto: CreateBookingDto,
-    @Request() req,
+    @Req() req: AuthenticatedRequest,
   ): Promise<Booking> {
     return this.bookingsService.create(
       createBookingDto,
@@ -70,7 +82,7 @@ export class BookingsController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
-  findAll(@Request() req): Promise<Booking[]> {
+  findAll(@Req() req: AuthenticatedRequest): Promise<Booking[]> {
     return this.bookingsService.findAll(req.user.id, req.user.role);
   }
 
@@ -83,7 +95,10 @@ export class BookingsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Booking not found' })
-  findOne(@Param('id') id: string, @Request() req): Promise<Booking> {
+  findOne(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Booking> {
     return this.bookingsService.findOne(id, req.user.id, req.user.role);
   }
 
@@ -97,7 +112,7 @@ export class BookingsController {
   @ApiResponse({
     status: 200,
     description: 'Booking updated successfully',
-    type: BookingResponse,
+    type: CreateBookingDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
@@ -107,7 +122,7 @@ export class BookingsController {
   update(
     @Param('id') id: string,
     @Body() updateBookingDto: UpdateBookingDto,
-    @Request() req,
+    @Req() req: AuthenticatedRequest,
   ): Promise<Booking> {
     return this.bookingsService.update(
       id,
@@ -119,15 +134,55 @@ export class BookingsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER) // Allow customers to delete their own bookings
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a booking by ID (Admin only)' })
+  @ApiOperation({ summary: 'Delete a booking by ID' })
   @ApiParam({ name: 'id', description: 'Booking ID', type: String })
   @ApiResponse({ status: 204, description: 'Booking deleted successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiResponse({ status: 404, description: 'Booking not found' })
-  remove(@Param('id') id: string): Promise<void> {
-    return this.bookingsService.remove(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<void> {
+    return this.bookingsService.remove(id, req.user.id, req.user.role);
+  }
+
+  @Patch(':id/cancel')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cancel a booking by ID' })
+  @ApiParam({ name: 'id', description: 'Booking ID', type: String })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        reason: { type: 'string', description: 'Cancellation reason' },
+      },
+    },
+    required: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Booking cancelled successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
+  @ApiResponse({ status: 400, description: 'Cannot cancel booking' })
+  cancelBooking(
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Booking> {
+    return this.bookingsService.cancelBooking(
+      id,
+      req.user.id,
+      req.user.role,
+      body.reason,
+    );
   }
 }
