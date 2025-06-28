@@ -8,6 +8,7 @@ import { LocationsModule } from './locations/locations.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
+import {AppMailerModule} from "./mailer/mailer.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BookingsModule } from './bookings/bookings.module';
     UsersModule,
     AuthModule,
     BookingsModule,
+    AppMailerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

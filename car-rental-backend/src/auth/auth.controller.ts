@@ -7,28 +7,26 @@ import {
   UseGuards,
   Get,
   Request,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   LoginResponse,
   RegisterResponse,
 } from '../users/interfaces/auth.interface';
-import {
-  // ForgotPasswordDto,
-  LoginUserDto,
-  // ResetPasswordDto,
-} from '../users/dtos/auth.dto';
+import {ForgotPasswordDto, LoginUserDto, ResetPasswordDto} from '../users/dtos/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-// import { PasswordResetService } from './services/password-reset.service';
+import { PasswordResetService } from './services/password-reset.service';
 import { RegisterUserDto } from '../users/dtos';
 import { AuthRequest } from '../common/interface/auth-request.interface';
 import { UserResponse } from '../users/interfaces/user.interface';
+import {ApiOperation, ApiResponse} from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    // private passwordResetService: PasswordResetService,
+    private passwordResetService: PasswordResetService,
   ) {}
 
   /**
@@ -103,32 +101,32 @@ export class AuthController {
     };
   }
 
-  // @Post('forgot-password')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Request password reset' })
-  // @ApiResponse({ status: 200, description: 'Password reset email sent' })
-  // @ApiResponse({ status: 400, description: 'Bad request' })
-  // async forgotPassword(@Body() dto: ForgotPasswordDto) {
-  //   return this.passwordResetService.requestPasswordReset(dto.email);
-  // }
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset' })
+  @ApiResponse({ status: 200, description: 'Password reset email sent' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.passwordResetService.requestPasswordReset(dto.email);
+  }
 
-  // @Post('reset-password')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'Reset password with token' })
-  // @ApiResponse({ status: 200, description: 'Password reset successfully' })
-  // @ApiResponse({ status: 400, description: 'Invalid token or password' })
-  // async resetPassword(@Body() dto: ResetPasswordDto) {
-  //   return this.passwordResetService.resetPassword(
-  //     dto.token,
-  //     dto.password,
-  //     dto.confirmPassword,
-  //   );
-  // }
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password with token' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid token or password' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.passwordResetService.resetPassword(
+      dto.token,
+      dto.password,
+      dto.confirmPassword,
+    );
+  }
 
-  // @Get('verify-reset-token/:token')
-  // @ApiOperation({ summary: 'Verify if reset token is valid' })
-  // @ApiResponse({ status: 200, description: 'Token validation result' })
-  // async verifyResetToken(@Param('token') token: string) {
-  //   return this.passwordResetService.verifyResetToken(token);
-  // }
+  @Get('verify-reset-token/:token')
+  @ApiOperation({ summary: 'Verify if reset token is valid' })
+  @ApiResponse({ status: 200, description: 'Token validation result' })
+  async verifyResetToken(@Param('token') token: string) {
+    return this.passwordResetService.verifyResetToken(token);
+  }
 }

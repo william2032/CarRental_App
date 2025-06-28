@@ -1,0 +1,74 @@
+@baseUrl = http://localhost:3000
+@userId = 5fd1474d-f419-4bee-9727-b628a9032e4c
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZmQxNDc0ZC1mNDE5LTRiZWUtOTcyNy1iNjI4YTkwMzJlNGMiLCJlbWFpbCI6ImN1c3RvbWVyQHNob3BpZS5jb20iLCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NTAzMjc2MDQsImV4cCI6MTc1MDQxNDAwNH0.MdGP7EafvYakaKoNRkBirxdgzYzFvl576O8ZJcq6xgg
+### Register a new customer
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "lukebetika@gmail.com",
+  "password": "admin123456",
+  "phone": "0798332744",
+  "name": "Luke"
+}
+
+### Register a new admin
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "kivindukilonzo@gmail.com",
+  "password": "admin123456",
+  "phone": "07983772744",
+  "name": "Admin William",
+  "role": "ADMIN"
+}
+
+### Login with valid credentials
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "customer@shopie.com",
+  "password": "password123"
+}
+
+### Login with admin credentials
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@shopie.com",
+  "password": "admin123456"
+}
+
+### Login with wrong password
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "customer@shopie.com",
+  "password": "wrongpassword"
+}
+
+### Request password reset
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "kivindukilonzo@gmail.com"
+}
+
+### Change password (requires authentication)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "currentPassword": "newpassword123",
+  "newPassword": "password123"
+}
+### Get user profile
+GET {{baseUrl}}/auth/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
