@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3000
+@userId = afa2a346-aba5-4725-a6ae-1c0a2e78aaa1
+### Create a regular customer
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "email": "customer@example.com",
+  "password": "password123",
+  "name": "John "
+}
+
+### Create an admin user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "email": "admin@shopie.com",
+  "password": "admin123456",
+  "name": "Admin ",
+  "role": "ADMIN"
+}
+
+### Delete user (should return 204 No Content)
+DELETE {{baseUrl}}/users/{{userId}}
+Content-Type: application/json

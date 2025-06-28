@@ -1,0 +1,20 @@
+//create a new vehicles
+POST /vehicles HTTP/1.1
+Host: your-api.com
+Content-Type: application/json
+
+{
+  "make": "Toyota",
+  "model": "Camry",
+  "year": 2023,
+  "fuelType": "PETROL",
+  "category": "SEDAN",
+  "transmission": "AUTOMATIC",
+  "pricePerDay": 50.00,
+  "pricePerHour": 10.00,
+  "mileage": 15000,
+  "features": ["GPS", "Bluetooth", "Air Conditioning"],
+  "images": ["https://example.com/image1.jpg"],
+  "isAvailable": true,
+  "condition": "EXCELLENT"
+}

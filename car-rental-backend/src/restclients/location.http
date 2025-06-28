@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:3000
+//add location
+POST {{baseUrl}}/locations
+Content-Type: application/json
+
+{
+  "name": "Downtown Branch",
+  "address": "123 Main St",
+  "city": "Nairobi",
+  "country": "Kenya",
+  "isActive": true
+}
