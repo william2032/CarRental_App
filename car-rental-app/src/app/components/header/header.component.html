@@ -4,13 +4,8 @@
       <!-- Logo -->
       <div class="flex items-center">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-              <path d="M3 4a1 1 0 00-1 1v10a1 1 0 002 0V6.414l1.293 1.293a1 1 0 001.414-1.414L3.414 3.414A1 1 0 003 4zm14-1a1 1 0 00-1 1v10a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414L17.414 3.414A1 1 0 0017 3z"/>
-            </svg>
-          </div>
-          <span class="text-xl font-bold text-gray-900">CarRental</span>
+<!--          logo-->
+          <span class="text-[28px]  tracking-[4px] font-[600]  font-montserrat text-gray-900">SafariRentals</span>
         </div>
       </div>
 
@@ -38,10 +33,11 @@
         </div>
 
         <a href="#" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">List cars</a>
-
-        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-          Sign up
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
+            <span *ngIf="!isLoggedIn" (click)="navigateToLogin()">Sign In</span>
         </button>
+<!--          <span *ngIf="isLoggedIn" (click)="profile()" class="cursor-pointer"> Profile</span>-->
+          <span *ngIf="isLoggedIn" (click)="logout()" class="cursor-pointer font-montserrat">Log Out</span>
 
         <!-- Mobile menu button -->
         <button class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">

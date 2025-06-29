@@ -23,7 +23,10 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
+  phone?: string;
   role?: string;
+  city?: string;
+  country?: string;
 }
 
 export interface AuthResponse {
