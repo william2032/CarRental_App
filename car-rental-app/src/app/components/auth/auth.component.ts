@@ -4,13 +4,15 @@ import {Router, ActivatedRoute, RouterLink} from '@angular/router';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {
-  AuthService,
-  LoginRequest,
-  RegisterRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest
+  AuthService
 } from '../../services/auth.service';
 import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {
+  ForgotPasswordRequest,
+  LoginRequest,
+  RegisterRequest,
+  ResetPasswordRequest
+} from '../../shared/models/user.model';
 
 @Component({
   selector: 'app-auth',
@@ -53,18 +55,19 @@ export class AuthComponent implements OnInit, OnDestroy {
     'Makueni',
     'Nakuru',
   ];
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private  route:ActivatedRoute,
+    private route: ActivatedRoute,
   ) {
   }
 
   ngOnInit(): void {
     //Read mode from route data
     this.route.data.subscribe(data => {
-      const mode = data['mode'] as 'login' | 'register' | 'forgot-password' | 'reset-password' ;
+      const mode = data['mode'] as 'login' | 'register' | 'forgot-password' | 'reset-password';
       if (mode) {
         this.currentMode = mode;
       }
@@ -93,7 +96,7 @@ export class AuthComponent implements OnInit, OnDestroy {
       confirmPassword: ['', [Validators.required]],
       phone: [''],
       city: ['', Validators.required],
-      country: [{ value: 'Kenya', disabled: true }]
+      country: [{value: 'Kenya', disabled: true}]
     }, {validators: this.passwordMatchValidator});
 
 
@@ -146,6 +149,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.router.navigate(['/reset-password']);
     this.clearMessages();
   }
+
   onClose() {
     this.currentMode = null;
     this.router.navigate(['/']);
@@ -183,7 +187,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     if (this.registerForm.valid && !this.isLoading) {
       this.isLoading = true;
       this.clearMessages();
-      const formValue:RegisterRequest = this.registerForm.getRawValue();
+      const formValue: RegisterRequest = this.registerForm.getRawValue();
 
       const userData: RegisterRequest = {
         name: formValue.name,

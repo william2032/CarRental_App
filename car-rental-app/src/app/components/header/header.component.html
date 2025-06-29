@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="flex items-center">
         <div class="flex items-center space-x-2">
-<!--          logo-->
+          <!--          logo-->
           <span class="text-[28px]  tracking-[4px] font-[600]  font-montserrat text-gray-900">SafariRentals</span>
         </div>
       </div>
@@ -17,27 +17,32 @@
       </nav>
 
       <!-- Search and Actions -->
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-6">
         <!-- Search -->
-        <div class="hidden lg:flex items-center">
+        <div class="hidden lg:flex items-center px-10">
           <div class="relative">
             <input
               type="text"
               placeholder="Search cars"
-              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-            >
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none"
+                 stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
         </div>
-
-        <a href="#" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">List cars</a>
-        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
-            <span *ngIf="!isLoggedIn" (click)="navigateToLogin()">Sign In</span>
+        <button
+          *ngIf="!isLoggedIn"  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
+          <span  (click)="navigateToLogin()">Sign In</span>
         </button>
-<!--          <span *ngIf="isLoggedIn" (click)="profile()" class="cursor-pointer"> Profile</span>-->
+          <button
+            *ngIf="isLoggedIn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
+            <span  (click)="navigateToLogin()">Dashboard</span>
+          </button>
           <span *ngIf="isLoggedIn" (click)="logout()" class="cursor-pointer font-montserrat">Log Out</span>
+
+
 
         <!-- Mobile menu button -->
         <button class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
@@ -45,6 +50,18 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
+
+        <!-- Logout Modal -->
+        <div
+          *ngIf="showLogoutModal"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        >
+          <div class="bg-white p-6 rounded-xl shadow-lg max-w-sm text-center">
+            <h2 class="text-lg font-semibold font-montserrat text-gray-800">Logged Out</h2>
+            <p class="text-sm text-gray-600 mt-2">You have been successfully logged out.</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

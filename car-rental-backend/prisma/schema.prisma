@@ -34,6 +34,7 @@ model Vehicle {
   model        String
   year         Int
   fuelType     FuelType
+  seats        Int              @default(5)
   category     VehicleType
   transmission TransmissionType
   pricePerDay  Decimal          @db.Decimal(10, 2)
@@ -181,12 +182,8 @@ enum UserRole {
 enum VehicleType {
   SEDAN
   SUV
-  HATCHBACK
+  SPORT
   CONVERTIBLE
-  TRUCK
-  VAN
-  COUPE
-  WAGON
   LUXURY
 }
 

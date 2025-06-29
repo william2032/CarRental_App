@@ -1,0 +1,35 @@
+import { Injectable } from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Vehicle } from '../shared/models/vehicle.model';
+import {environment} from '../../environments/environment';
+import {AuthService} from './auth.service';
+
+@Injectable({ providedIn: 'root' })
+export class VehicleService {
+  private apiUrl = `${environment.apiUrl}/vehicles`;
+
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    if (token) {
+      return new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      });
+    }
+
+    return new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+  }
+
+  getVehicles(): Observable<Vehicle[]> {
+    return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getHeaders() });
+  }
+
+  getVehicle(id: string): Observable<Vehicle> {
+    return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+}

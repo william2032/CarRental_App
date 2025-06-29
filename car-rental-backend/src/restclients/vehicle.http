@@ -1,33 +1,44 @@
 @baseUrl = http://localhost:3000
-@customertoken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNnM3Npc2IwMDAwdGJ5azdreTVsdmN5IiwiZW1haWwiOiJsdWtlYmV0aWthQGdtYWlsLmNvbSIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc1MTEwNjgyOCwiZXhwIjoxNzUxMTkzMjI4fQ.3MlC-VmTdyLxkgibJXDP7ZEpViUt4L97wAN24VoZAD0
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNlYWNtcm0wMDAxdGJsb3JtaWF5dHdnIiwiZW1haWwiOiJhZG1pbkBzaG9waWUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzUxMTA2Mjc2LCJleHAiOjE3NTExOTI2NzZ9.3Gz3dlkjSqwge-BE-aeXpQfQDlOd_xSZiGV6HDXLyWk
+@customertoken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNobDBpMXAwMDAwdGI3bzJ4aXU4cG1iIiwiZW1haWwiOiJyb2NreDIwNjBAZ21haWwuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzUxMjAwODcyLCJleHAiOjE3NTEyODcyNzJ9.W4tZr-qspmpntMq0GN41JOXUj0n55TZGhPiDSlKGhJE
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNobHJyOWQwMDAxdGI3b3VvN3A3ZmFpIiwiZW1haWwiOiJraXZpbmR1a2lsb256b0BnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTExOTc0OTIsImV4cCI6MTc1MTI4Mzg5Mn0.mIaz6aHvoOvQnQrqH1Gb8OJk5h5UjdepoRkxIDG_baY
 
 @vehicleId = cmce7pnd50001tbww0o7nimx0
 ### Create Vehicle (ADMIN or AGENT only)
 POST {{baseUrl}}/vehicles
 Host: your-api.com
 Content-Type: application/json
-Authorization: Bearer {{customertoken}}
+Authorization: Bearer {{adminToken}}
 
 {
-  "make": "Toyota",
-  "model": "Corolla",
+  "make": "BMW",
+  "model": "X6",
   "year": 2022,
-  "color": "Blue",
-  "mileage": 15000,
-  "registrationNumber": "KDA123X",
   "fuelType": "PETROL",
-  "vehicleType": "SEDAN",
-  "transmissionType": "AUTOMATIC",
+  "seats": 5,
+  "category": "SUV",
+  "transmission": "AUTOMATIC",
+  "pricePerDay": 18000.00,
+  "pricePerHour": 1500.00,
+  "mileage": 25000,
+  "features": [
+    "Leather Seats",
+    "Sunroof",
+    "Navigation System",
+    "Bluetooth",
+    "Backup Camera",
+    "Heated Seats"
+  ],
+  "images": ["https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"],
+  "isAvailable": true,
   "condition": "EXCELLENT",
-  "pricePerDay": 45.99,
-  "availability": true
+  "locationId": "cmchlwmqf0002tbio352bvvdz"
 }
+
 
 ###
 
 ### Get All Vehicles (ANY ROLE)
-GET http://localhost:3000/vehicles
+GET {{baseUrl}}/vehicles
 Authorization: Bearer {{customertoken}}
 
 ###

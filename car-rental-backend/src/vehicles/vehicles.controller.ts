@@ -9,6 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { Vehicle } from './interfaces/vehicle.interface';
@@ -18,6 +19,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import {
   CreateVehiclesDto,
@@ -30,9 +32,8 @@ import UserRole = $Enums.UserRole;
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 
-function UpdateVehicleDto() {}
-
 @ApiTags('Vehicles')
+@ApiBearerAuth()
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
@@ -40,7 +41,7 @@ export class VehiclesController {
   @Post()
   @UsePipes(new ValidationPipe())
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.AGENT, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new vehicle' })
   @ApiBody({ type: CreateVehiclesDto })
   @ApiResponse({
@@ -53,15 +54,14 @@ export class VehiclesController {
     return this.vehiclesService.create(createVehicleDto);
   }
 
-
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.AGENT)
+  @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve all vehicles' })
   @ApiResponse({
     status: 200,
     description: 'List of all vehicles',
-    type: [CreateVehiclesDto],
+    type: [VehicleResponseDto],
   })
   findAll(): Promise<Vehicle[]> {
     return this.vehiclesService.findAll();
@@ -69,7 +69,7 @@ export class VehiclesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.AGENT, UserRole.CUSTOMER)
+  @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve a vehicle by ID' })
   @ApiParam({ name: 'id', description: 'Vehicle ID', type: String })
   @ApiResponse({
@@ -84,11 +84,11 @@ export class VehiclesController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.AGENT)
+  @Roles(UserRole.AGENT, UserRole.ADMIN)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update a vehicle by ID' })
   @ApiParam({ name: 'id', description: 'Vehicle ID', type: String })
-  @ApiBody({ type: UpdateVehicleDto })
+  @ApiBody({ type: UpdateVehiclesDto })
   @ApiResponse({
     status: 200,
     description: 'Vehicle updated successfully',

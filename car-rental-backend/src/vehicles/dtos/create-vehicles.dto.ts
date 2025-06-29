@@ -41,6 +41,7 @@ export class CreateVehiclesDto {
   @IsEnum(TransmissionType)
   transmission: TransmissionType;
 
+
   @Transform(({ value }) => parseFloat(value))
   @IsNumber(
     { maxDecimalPlaces: 2 },
@@ -59,6 +60,9 @@ export class CreateVehiclesDto {
   @IsInt()
   mileage?: number;
 
+  @IsNotEmpty()
+  @IsInt()
+  seats: number;
   @IsArray()
   @IsString({ each: true })
   features: string[];

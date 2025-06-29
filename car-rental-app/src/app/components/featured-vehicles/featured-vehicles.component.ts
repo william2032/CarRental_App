@@ -1,59 +1,60 @@
-import { Component } from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import {VehicleService} from '../../services/vehicle.service';
+import {Vehicle} from '../../shared/models/vehicle.model';
 
-interface Vehicle {
-  id: number;
+interface DisplayVehicle {
+  id: string;
   name: string;
+  seats: number;
   category: string;
   price: number;
   image: string;
+  year: number;
   transmission: string;
   location: string;
-  gasoline: boolean;
+  gasoline: string;
   available: boolean;
 }
 
 @Component({
   selector: 'app-featured-vehicles',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './featured-vehicles.component.html',
-  styleUrl: './featured-vehicles.component.scss'
+  styleUrls: ['./featured-vehicles.component.scss'],
 })
-export class FeaturedVehiclesComponent {
-  vehicles: Vehicle[] = [
-    {
-      id: 1,
-      name: 'BMW X5',
-      category: 'SUV',
-      price: 500,
-      image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      transmission: 'Automatic',
-      location: 'Los Angeles',
-      gasoline: true,
-      available: true
-    },
-    {
-      id: 2,
-      name: 'BMW X5',
-      category: 'Coupe',
-      price: 500,
-      image: 'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80',
-      transmission: 'Automatic',
-      location: 'Los Angeles',
-      gasoline: true,
-      available: true
-    },
-    {
-      id: 3,
-      name: 'BMW X5',
-      category: 'Sports',
-      price: 600,
-      image: 'https://images.unsplash.com/photo-1610768764270-790fbec18178?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1984&q=80',
-      transmission: 'Automatic',
-      location: 'Los Angeles',
-      gasoline: false,
-      available: true
-    }
-  ];
+export class FeaturedVehiclesComponent implements OnInit {
+  vehicles: DisplayVehicle[] = [];
+  isLoading = true;
+  errorMessage = '';
+
+
+  constructor(private vehicleService: VehicleService) {}
+
+  ngOnInit(): void {
+    this.vehicleService.getVehicles().subscribe({
+      next: (vehicles) => {
+        this.vehicles = vehicles.map((v: Vehicle) => ({
+          id: v.id,
+          name: `${v.make} ${v.model}`,
+          seats: v.seats,
+          category: v.category,
+          price: v.pricePerDay,
+          image: v.images[0] ,
+          transmission: v.transmission,
+          location: v.location?.name,
+          year: v.year,
+          gasoline: v.fuelType,
+          available: v.isAvailable,
+        }));
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.message;
+      },
+    });
+  }
 }

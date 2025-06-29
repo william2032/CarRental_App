@@ -22,8 +22,8 @@ Content-Type: application/json
 {
   "email": "kivindukilonzo@gmail.com",
   "password": "admin123456",
-  "phone": "07983772744",
-  "name": "Admin William",
+  "phone": "0798678778",
+  "name": "Admin ",
   "role": "ADMIN"
 }
 
@@ -32,8 +32,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "customer@shopie.com",
-  "password": "password123"
+  "email": "rockx2060@gmail.com",
+  "password": "rockx2060@gmail.com"
 }
 
 ### Login with admin credentials

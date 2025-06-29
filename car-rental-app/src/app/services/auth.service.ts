@@ -4,51 +4,14 @@ import {Observable, BehaviorSubject, throwError, Subject} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {environment} from '../../environments/environment';
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string;
-  role: string;
-  city?: string;
-  country?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  name: string;
-  phone?: string;
-  role?: string;
-  city?: string;
-  country?: string;
-}
-
-export interface AuthResponse {
-  message: string;
-  user: User;
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-export interface ResetPasswordRequest {
-  token: string;
-  password: string;
-  confirmPassword: string;
-}
-
+import {
+  AuthResponse,
+  ForgotPasswordRequest,
+  LoginRequest,
+  RegisterRequest,
+  ResetPasswordRequest,
+  User
+} from '../shared/models/user.model';
 @Injectable({
   providedIn: 'root'
 })

@@ -1,48 +1,35 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import {AuthService} from '../services/auth.service';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  // Get the auth token from the service
+  const authToken = authService.getToken();
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Get the auth token from the service
-    const authToken = this.authService.getToken();
-
-    // Clone the request and add the authorization header if token exists
-    if (authToken) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${authToken}`
-        }
-      });
-    }
-
-    // Handle the request and catch any errors
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        // If we get a 401 Unauthorized error, logout the user
-        if (error.status === 401) {
-          this.authService.logout();
-          this.router.navigate(['/auth']);
-        }
-
-        return throwError(() => error);
-      })
-    );
+  // Clone the request and add the authorization header if token exists
+  if (authToken) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${authToken}`
+      }
+    });
   }
-}
+
+  // Handle the request and catch any errors
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // If we get a 401 Unauthorized error, logout the user
+      if (error.status === 401) {
+        authService.logout();
+        router.navigate(['/auth']);
+      }
+
+      return throwError(() => error);
+    })
+  );
+};

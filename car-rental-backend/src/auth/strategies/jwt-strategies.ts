@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../../users/users.service';
 import { JwtPayload } from '../../users/interfaces/auth.interface';
 import { UserResponse } from '../../users/interfaces/user.interface';
 import { AuthService } from '../auth.service';
@@ -32,11 +31,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // console.log('User not found for payload.sub:', payload.sub);
       throw new UnauthorizedException('User not found');
     }
-    // console.log('Authenticated user:', {
-    //   id: user.id,
-    //   email: user.email,
-    //   role: user.role,
-    // });
+    console.log('Authenticated user:', {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return user;
   }
