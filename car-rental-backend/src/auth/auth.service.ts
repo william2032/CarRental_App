@@ -38,6 +38,8 @@ export class AuthService implements IAuthService {
       password: registerDto.password,
       name: registerDto.name,
       role: registerDto.role,
+      city: registerDto.city,
+      country: registerDto.country || 'Kenya',
     });
 
     //send email

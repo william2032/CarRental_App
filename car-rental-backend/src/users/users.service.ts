@@ -72,6 +72,8 @@ export class UserService implements IuserService {
         phone: dto.phone.trim(),
         password: hashedPassword,
         role: dto.role,
+        city: dto.city?.trim(),
+        country: dto.country?.trim(),
       },
     });
     // Return user without password

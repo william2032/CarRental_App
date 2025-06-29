@@ -30,4 +30,12 @@ export class RegisterUserDto {
   @IsOptional() // Role is optional, defaults to CUSTOMER
   @IsEnum(UserRole, { message: 'Role must be either ADMIN or CUSTOMER' })
   role?: UserRole;
+
+  @IsOptional()
+  @IsString({ message: 'City must be a string' })
+  city?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Country must be a string' })
+  country?: string;
 }

@@ -10,7 +10,6 @@ export interface User {
   password: string;
   phone: string | null;
   profilePicture: string | null;
-  address: string | null;
   city: string | null;
   country: string | null;
   role: UserRole;
@@ -24,7 +23,6 @@ export interface UserResponse {
   email: string;
   phone: string | null;
   profilePicture: string | null;
-  address: string | null;
   city: string | null;
   country: string | null;
   role: UserRole;

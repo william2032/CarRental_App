@@ -10,6 +10,8 @@ export interface User {
   name: string;
   phone?: string;
   role: string;
+  city?: string;
+  country?: string;
   createdAt?: string;
   updatedAt?: string;
 }
