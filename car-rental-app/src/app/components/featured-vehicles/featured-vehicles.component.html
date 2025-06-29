@@ -1,0 +1,86 @@
+<section class="py-16 lg:py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        Featured Vehicles
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Explore our selection of premium vehicles available for your next adventure.
+      </p>
+    </div>
+
+    <!-- Vehicles Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+      <div *ngFor="let vehicle of vehicles" class="group cursor-pointer">
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
+          <!-- Vehicle Image -->
+          <div class="relative">
+            <img
+              [src]="vehicle.image"
+              [alt]="vehicle.name"
+              class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+            >
+            <!-- Price Badge -->
+            <div class="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              ${{ vehicle.price }}/day
+            </div>
+            <!-- Available Badge -->
+            <div *ngIf="vehicle.available" class="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+              Available
+            </div>
+          </div>
+
+          <!-- Vehicle Details -->
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-1">{{ vehicle.name }}</h3>
+                <p class="text-gray-600">{{ vehicle.category }}</p>
+              </div>
+            </div>
+
+            <!-- Vehicle Features -->
+            <div class="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+              <div class="flex items-center space-x-1">
+                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span *ngIf="vehicle.gasoline; else electric">Gasoline</span>
+                <ng-template #electric>Electric</ng-template>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ vehicle.transmission }}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ vehicle.location }}</span>
+              </div>
+            </div>
+
+            <!-- Book Button -->
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200">
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View All Button -->
+    <div class="text-center mt-12">
+      <button class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium transition-colors">
+        <span>Explore all cars</span>
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
