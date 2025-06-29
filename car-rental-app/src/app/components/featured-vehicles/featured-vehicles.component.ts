@@ -1,22 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {VehicleService} from '../../services/vehicle.service';
-import {Vehicle} from '../../shared/models/vehicle.model';
-
-interface DisplayVehicle {
-  id: string;
-  name: string;
-  seats: number;
-  category: string;
-  price: number;
-  image: string;
-  year: number;
-  transmission: string;
-  location: string;
-  gasoline: string;
-  available: boolean;
-}
+import {DisplayVehicle, Vehicle} from '../../shared/models/vehicle.model';
 
 @Component({
   selector: 'app-featured-vehicles',
@@ -31,8 +17,10 @@ export class FeaturedVehiclesComponent implements OnInit {
   errorMessage = '';
 
 
-  constructor(private vehicleService: VehicleService) {}
-
+  constructor(private vehicleService: VehicleService,private router: Router) {}
+  navigateToVehicleDetails(vehicleId: string): void {
+    this.router.navigate(['/vehicle', vehicleId]);
+  }
   ngOnInit(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (vehicles) => {

@@ -55,8 +55,8 @@ export class VehiclesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve all vehicles' })
   @ApiResponse({
     status: 200,
@@ -68,8 +68,8 @@ export class VehiclesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(UserRole.CUSTOMER, UserRole.AGENT, UserRole.ADMIN)
   @ApiOperation({ summary: 'Retrieve a vehicle by ID' })
   @ApiParam({ name: 'id', description: 'Vehicle ID', type: String })
   @ApiResponse({

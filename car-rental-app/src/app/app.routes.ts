@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import {LandingPageComponent} from './components/landing-page/landing-page.component';
 import {AuthComponent} from "./components/auth/auth.component";
+import {VehicleDetailsComponent} from './components/vehicle-details/vehicle-details.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
+  { path: 'vehicle/:id', component: VehicleDetailsComponent },
   { path: 'login', component: AuthComponent, data: { mode: 'login' } },
   { path: 'register', component: AuthComponent, data: { mode: 'register' } },
   { path: 'forgot-password', component: AuthComponent, data: { mode: 'forgot-password' } },

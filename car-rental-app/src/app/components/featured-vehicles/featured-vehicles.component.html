@@ -12,7 +12,7 @@
 
     <!-- Vehicles Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-      <div *ngFor="let vehicle of vehicles" class="group cursor-pointer">
+      <div *ngFor="let vehicle of vehicles" class="group cursor-pointer" (click)="navigateToVehicleDetails(vehicle.id)">
         <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
           <!-- Vehicle Image -->
           <div class="relative">
@@ -46,8 +46,8 @@
               </div>
             </div>
             <!-- Vehicle Features -->
-            <div class="flex items-start space-x-1 ">
-              <svg viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">
+            <div class="flex  items-center space-x-1 pl-3">
+              <svg viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
                 <path
                   d="M16.719 19.7519L16.0785 14.6279C15.8908 13.1266 14.6146 12 13.1017 12H10.8983C9.38538 12 8.10917 13.1266 7.92151 14.6279L7.28101 19.7519C7.1318 20.9456 8.06257 22 9.26556 22H14.7344C15.9374 22 16.8682 20.9456 16.719 19.7519Z"
                   stroke="#252222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -75,7 +75,7 @@
                 <span class="">{{ vehicle.gasoline }}</span>
               </div>
               <div class="flex items-center space-x-1">
-                <svg viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
+                <svg viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4">
                   <path
                     d="M2 4C2 2.89543 2.89543 2 4 2C5.10457 2 6 2.89543 6 4C6 4.83934 5.48296 5.55793 4.75 5.85462V11.25H11.25V5.85462C10.517 5.55793 10 4.83934 10 4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4C14 4.83934 13.483 5.55793 12.75 5.85462V11.25H16C16.964 11.25 17.6116 11.2484 18.0946 11.1835C18.5561 11.1214 18.7536 11.0142 18.8839 10.8839C19.0142 10.7536 19.1214 10.5561 19.1835 10.0946C19.2484 9.61157 19.25 8.96401 19.25 8V5.85462C18.517 5.55793 18 4.83934 18 4C18 2.89543 18.8954 2 20 2C21.1046 2 22 2.89543 22 4C22 4.83934 21.483 5.55793 20.75 5.85462V8.05199C20.75 8.95048 20.7501 9.6997 20.6701 10.2945C20.5857 10.9223 20.4 11.4891 19.9445 11.9445C19.4891 12.4 18.9223 12.5857 18.2945 12.6701C17.6997 12.7501 16.9505 12.75 16.052 12.75L12.75 12.75V18.1454C13.483 18.4421 14 19.1607 14 20C14 21.1046 13.1046 22 12 22C10.8954 22 10 21.1046 10 20C10 19.1607 10.517 18.4421 11.25 18.1454V12.75H4.75V18.1454C5.48296 18.4421 6 19.1607 6 20C6 21.1046 5.10457 22 4 22C2.89543 22 2 21.1046 2 20C2 19.1607 2.51704 18.4421 3.25 18.1454V5.85462C2.51704 5.55793 2 4.83934 2 4Z"
                     fill="#505258"/>
@@ -92,7 +92,7 @@
               </div>
 
               <div class="flex items-center space-x-1">
-                <svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg" fill="#343232" class="h-6 w-6">
+                <svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg" fill="#343232" class="h-4 w-4">
                   <path d="M12 15c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0-8c-2.761 0-5 2.239-5 5s2.239 5 5 5
            5-2.239 5-5-2.239-5-5-5zm0 22c-1.663-.009-10-12.837-10-17 0-5.522 4.477-10 10-10s10 4.478 10 10c0 4.125-8.363
            16.991-10 17zm0-29C5.373 0 0 5.373 0 12c0 5.018 10.005 20.011 12 20 1.964.011 12-15.061 12-20
@@ -102,12 +102,6 @@
                 <span>{{ vehicle.location }}</span>
               </div>
             </div>
-
-            <!-- view details -->
-            <!--            <button-->
-            <!--              class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200">-->
-            <!--              View Details-->
-            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -116,7 +110,7 @@
     <!-- View All Button -->
     <div class="text-center mt-12">
       <button
-        class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium transition-colors ">
+        class="inline-flex items-center border border-gray-400  hover:border-gray-800  rounded-md space-x-2 px-[18px] py-[8px] text-blue-600 hover:text-blue-700 font-medium transition-colors ">
         <span>Explore all cars</span>
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>

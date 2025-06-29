@@ -20,3 +20,16 @@ export interface Vehicle {
   createdAt: string;
   updatedAt: string;
 }
+export interface DisplayVehicle {
+  id: string;
+  name: string;
+  seats: number;
+  category: string;
+  price: number;
+  image: string;
+  year: number;
+  transmission: string;
+  location: string;
+  gasoline: string;
+  available: boolean;
+}
