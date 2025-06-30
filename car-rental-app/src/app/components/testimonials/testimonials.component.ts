@@ -20,22 +20,22 @@ export class TestimonialsComponent {
   testimonials: Testimonial[] = [
     {
       id: 1,
-      name: 'Emma Rodriguez',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b6b2c28d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
+      name: 'Joy Mwende',
+      avatar: "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png",
       rating: 5,
       review: "I've used many booking platforms before, but none compare to the personalized experience and seamless service provided."
     },
     {
       id: 2,
-      name: 'Emma Rodriguez',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
+      name: 'Goodman Saul',
+      avatar: "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png",
       rating: 5,
       review: "I've used many booking platforms before, but none compare to the personalized experience and seamless service provided."
     },
     {
       id: 3,
-      name: 'Emma Rodriguez',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+      name: 'Earl Monalisa',
+      avatar: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/joseph-mcfall.png',
       rating: 5,
       review: "I've used many booking platforms before, but none compare to the personalized experience and seamless service provided."
     }
