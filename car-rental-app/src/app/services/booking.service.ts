@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {Observable, throwError} from 'rxjs';
+import {Observable, switchMap, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Booking, CreateBookingDto} from '../shared/models/booking.model';
 import {environment} from '../../environments/environment';
@@ -37,26 +37,52 @@ export class BookingService {
     return this.authService.isLoggedIn();
   }
 
-  createBooking(bookingData: CreateBookingDto): Observable<Booking> {
+  createBooking(bookingData: CreateBookingDto): Observable<Booking | string> {
     // Check authentication before making request
-    console.log('request received');
     if (!this.isAuthenticated()) {
       return throwError(() => new Error('User not authenticated'));
     }
-    return this.http.post<Booking>(`${this.apiUrl}/bookings`, bookingData, {headers: this.getAuthHeaders()}).pipe(tap(() => {
-        // Redirect to bookings page after successful booking
-        this.router.navigate(['/bookings']);
-      }),
-      catchError((error) => {
-        if (error.status === 401) {
-          // Token might be expired or invalid
-          localStorage.removeItem('access_token');
-          this.router.navigate(['/login']);
+
+    // First, check for existing bookings
+    const params = new HttpParams()
+      .set('userId', bookingData.userId)
+      .set('vehicleId', bookingData.vehicleId);
+
+    return this.http.get<Booking[]>(`${this.apiUrl}/bookings`, {
+      headers: this.getAuthHeaders(),
+      params,
+    }).pipe(
+      switchMap((bookings) => {
+        const hasExistingBooking = bookings.some(booking =>
+          (booking.status !== 'CANCELLED' && booking.status !== 'REJECTED') &&
+          booking.vehicleId === bookingData.vehicleId &&
+          booking.userId === bookingData.userId
+        );
+
+        if (hasExistingBooking) {
+          return throwError(() => new Error('Sorry! We have already received your request!'));
+        } else {
+          return this.http.post<Booking>(`${this.apiUrl}/bookings`, bookingData, {
+            headers: this.getAuthHeaders()
+          }).pipe(
+            tap(() => {
+              // Redirect to bookings page after successful booking
+              this.router.navigate(['/bookings']);
+            }),
+            catchError((error) => {
+              if (error.status === 401) {
+                // Token might be expired or invalid
+                localStorage.removeItem('access_token');
+                this.router.navigate(['/login']);
+              }
+              return throwError(() => error);
+            })
+          );
         }
-        return throwError(() => error);
       })
     );
   }
+
 
   getAllBookings(): Observable<Booking[]> {
     if (!this.isAuthenticated()) {
