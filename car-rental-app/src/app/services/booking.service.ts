@@ -12,11 +12,13 @@ import {AuthService} from './auth.service';
 })
 export class BookingService {
   private apiUrl = `${environment.apiUrl}`;
+
   constructor(
     private http: HttpClient,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('access_token');
@@ -37,15 +39,11 @@ export class BookingService {
 
   createBooking(bookingData: CreateBookingDto): Observable<Booking> {
     // Check authentication before making request
+    console.log('request received');
     if (!this.isAuthenticated()) {
       return throwError(() => new Error('User not authenticated'));
     }
-    return this.http.post<Booking>(
-      `${this.apiUrl}/bookings`,
-      bookingData,
-      { headers: this.getAuthHeaders() }
-    ).pipe(
-      tap(() => {
+    return this.http.post<Booking>(`${this.apiUrl}/bookings`, bookingData, {headers: this.getAuthHeaders()}).pipe(tap(() => {
         // Redirect to bookings page after successful booking
         this.router.navigate(['/bookings']);
       }),
@@ -68,7 +66,7 @@ export class BookingService {
 
     return this.http.get<Booking[]>(
       `${this.apiUrl}/bookings`,
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -88,7 +86,7 @@ export class BookingService {
 
     return this.http.get<Booking>(
       `${this.apiUrl}/bookings/${id}`,
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -109,7 +107,7 @@ export class BookingService {
     return this.http.patch<Booking>(
       `${this.apiUrl}/bookings/${id}`,
       updateData,
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -126,10 +124,8 @@ export class BookingService {
       this.router.navigate(['/login']);
       return throwError(() => new Error('User not authenticated'));
     }
-    return this.http.patch<Booking>(
-      `${this.apiUrl}/bookings/${id}/cancel`,
-      {},
-      { headers: this.getAuthHeaders() }
+    return this.http.patch<Booking>(`${this.apiUrl}/bookings/${id}/cancel`, {},
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -149,7 +145,7 @@ export class BookingService {
 
     return this.http.delete<void>(
       `${this.apiUrl}/bookings/${id}`,
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -170,7 +166,7 @@ export class BookingService {
     return this.http.post<Booking>(
       `${this.apiUrl}/bookings/${id}/approve`,
       {},
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -191,7 +187,7 @@ export class BookingService {
     return this.http.post<Booking>(
       `${this.apiUrl}/bookings/${id}/reject`,
       {},
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {
@@ -211,7 +207,7 @@ export class BookingService {
 
     return this.http.get<Booking[]>(
       `${this.apiUrl}/bookings/status/pending`,
-      { headers: this.getAuthHeaders() }
+      {headers: this.getAuthHeaders()}
     ).pipe(
       catchError((error) => {
         if (error.status === 401) {

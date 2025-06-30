@@ -162,8 +162,7 @@
           <button
             (click)="bookCar()"
             [disabled]="!isFormValid() || isBooking"
-            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
+            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
             <span *ngIf="!isBooking">Book Now</span>
             <span *ngIf="isBooking" class="flex items-center justify-center">
               <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -175,7 +174,7 @@
           </button>
 
           <!-- Error Message -->
-          <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-50 border font-montserrat border-red-200 rounded-md">
             <p class="text-red-700 text-sm">{{ errorMessage }}</p>
           </div>
 
@@ -209,7 +208,6 @@
       <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
     </div>
   </div>
-
   <!-- Footer -->
   <app-footer></app-footer>
 </div>

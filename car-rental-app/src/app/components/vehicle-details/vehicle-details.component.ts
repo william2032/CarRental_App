@@ -107,6 +107,7 @@ export class VehicleDetailsComponent {
     }
     const user = this.authService.getCurrentUser();
     if (!user) {
+      this.errorMessage = 'Sign In or Create an Account';
       return;
     }
     this.isBooking = true;
