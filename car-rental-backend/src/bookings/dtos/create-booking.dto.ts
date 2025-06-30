@@ -16,6 +16,13 @@ export class CreateBookingDto {
 
   @IsNotEmpty()
   @IsString()
+  pickupLocation: string;
+  @IsNotEmpty()
+  @IsString()
+  returnLocation: string;
+
+  @IsNotEmpty()
+  @IsString()
   vehicleId: string;
 
   @IsNotEmpty()

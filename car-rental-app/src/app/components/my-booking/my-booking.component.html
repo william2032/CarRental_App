@@ -1,0 +1,125 @@
+<!--Header-->
+<app-header></app-header>
+
+<main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Bookings</h1>
+    <p class="text-gray-600 mt-2">View and manage your car bookings</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">Error loading bookings</h3>
+        <p class="text-sm text-red-700 mt-1">{{ error }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && bookings.length === 0" class="text-center py-12">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No bookings</h3>
+    <p class="mt-1 text-sm text-gray-500">You haven't made any bookings yet.</p>
+    <div class="mt-6">
+      <button routerLink="/vehicles" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+        Browse Cars
+      </button>
+    </div>
+  </div>
+
+  <!-- Bookings List -->
+  <div *ngIf="!loading && !error && bookings.length > 0" class="space-y-6">
+    <div *ngFor="let booking of bookings" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <!-- Car Image and Details -->
+          <div class="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+            <div class="flex-shrink-0">
+              <img
+                [src]="booking.vehicle?.images?.[0] || '/assets/default-car.jpg'"
+                [alt]="getCarDisplayName(booking.vehicle)"
+                class="h-32 w-48 object-cover rounded-lg"
+              >
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                {{ getCarDisplayName(booking.vehicle) }}
+              </h3>
+              <p class="text-sm text-gray-600 mb-1">
+                {{ booking.vehicle?.year || 'N/A' }} • {{ booking.vehicle?.transmission || 'N/A' }}
+              </p>
+
+              <!-- Booking Details -->
+              <div class="mt-4 space-y-2">
+                <div class="flex items-center text-sm text-gray-600">
+                  <span class="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  <span class="font-medium">Booking #{{ booking.id.substring(0, 8) }}</span>
+                  <span class="ml-4 px-2 py-1 text-xs font-medium rounded-full"
+                        [ngClass]="getStatusClass(booking.status)">
+                          {{ booking.status | titlecase }}
+                        </span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                  <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  <span>Rental Period: {{ formatDate(booking.startDate) }} - {{ formatDate(booking.endDate) }}</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                  <span class="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  <span>Pick-up Location: {{ booking.pickupLocation }}</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                  <span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                  <span>Return Location: {{ booking.returnLocation }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price and Actions -->
+          <div class="mt-6 lg:mt-0 lg:ml-6 flex-shrink-0">
+            <div class="text-right">
+              <div class="text-sm text-gray-600 mb-1">Total Price</div>
+              <div class="text-2xl font-bold text-blue-600">KES {{ booking.totalAmount }}</div>
+              <div class="text-xs text-gray-500 mt-1">
+                Booked on {{ formatDate(booking.createdAt) }}
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-4 space-y-2">
+              <button
+                *ngIf="booking.status.toLowerCase() === 'pending' || booking.status.toLowerCase() === 'confirmed'"
+                (click)="cancelBooking(booking.id)"
+                class="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+              >
+                Cancel Booking
+              </button>
+              <button
+                (click)="viewBookingDetails(booking.id)"
+                class="w-full px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<!--Footer-->
+<app-footer></app-footer>

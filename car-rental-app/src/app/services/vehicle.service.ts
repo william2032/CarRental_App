@@ -29,7 +29,7 @@ export class VehicleService {
     return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  getVehicle(id: string): Observable<Vehicle> {
+  getVehicleById(id: string): Observable<Vehicle> {
     return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

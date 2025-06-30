@@ -20,6 +20,7 @@ export interface Vehicle {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface DisplayVehicle {
   id: string;
   name: string;

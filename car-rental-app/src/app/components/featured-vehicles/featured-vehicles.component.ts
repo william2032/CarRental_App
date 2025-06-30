@@ -7,7 +7,7 @@ import {DisplayVehicle, Vehicle} from '../../shared/models/vehicle.model';
 @Component({
   selector: 'app-featured-vehicles',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './featured-vehicles.component.html',
   styleUrls: ['./featured-vehicles.component.scss'],
 })
@@ -19,7 +19,7 @@ export class FeaturedVehiclesComponent implements OnInit {
 
   constructor(private vehicleService: VehicleService,private router: Router) {}
   navigateToVehicleDetails(vehicleId: string): void {
-    this.router.navigate(['/vehicle', vehicleId]);
+    this.router.navigate(['/vehicles', vehicleId]);
   }
   ngOnInit(): void {
     this.vehicleService.getVehicles().subscribe({

@@ -19,6 +19,8 @@ export interface BookingWithRelations {
   bookingNumber: string;
   userId: string;
   vehicleId: string;
+  pickupLocation: string;
+  returnLocation: string;
   startDate: Date;
   endDate: Date;
   totalAmount: Decimal;
@@ -37,7 +39,6 @@ export interface BookingWithRelations {
     name: string;
     phone: string | null;
     profilePicture: string | null;
-    address: string | null;
     city: string | null;
     country: string | null;
   };

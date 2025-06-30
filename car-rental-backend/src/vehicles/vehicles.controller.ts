@@ -9,7 +9,7 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
-  Req,
+
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { Vehicle } from './interfaces/vehicle.interface';

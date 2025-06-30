@@ -598,7 +598,6 @@ export class BookingsService {
           name: true,
           phone: true,
           profilePicture: true,
-          address: true,
           city: true,
           country: true,
         },

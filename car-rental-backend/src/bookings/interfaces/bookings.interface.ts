@@ -17,6 +17,8 @@ export interface Booking {
   bookingNumber: string;
   userId: string;
   vehicleId: string;
+  pickupLocation: string;
+  returnLocation: string;
   startDate: Date;
   endDate: Date;
   totalAmount: Decimal;

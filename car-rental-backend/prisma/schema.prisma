@@ -83,9 +83,11 @@ model Booking {
   user                 User                   @relation(fields: [userId], references: [id])
   vehicleId            String
   vehicle              Vehicle                @relation(fields: [vehicleId], references: [id])
-  // dates and time
+  // dates and time and pickupstations
   startDate            DateTime
   endDate              DateTime
+  pickupLocation       String
+  returnLocation       String
   // pricing
   baseAmount           Decimal                @db.Decimal(10, 2)
   discountAmount       Decimal                @default(0) @db.Decimal(10, 2)

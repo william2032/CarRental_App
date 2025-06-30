@@ -1,17 +1,23 @@
 <section class="py-16 lg:py-24 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Section Header -->
-    <div class="text-center mb-12">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+    <div class="mb-8 flex  flex-col justify-center items-center mx-auto space-y-8">
+      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900  ">
         Featured Vehicles
       </h2>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+      <p class="text-lg text-gray-600 max-w-2xl  ">
         Explore our selection of premium vehicles available for your next adventure.
       </p>
     </div>
+    <!-- Loading State -->
+    <div *ngIf="isLoading || errorMessage" class="text-center mb-12   flex  flex-col justify-center h-64">
+      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 items-center mx-auto "></div>
+      <span *ngIf="isLoading && !errorMessage">Please wait...or refresh the page</span>
+      <span *ngIf="errorMessage">{{ errorMessage }}</span>
+    </div>
 
     <!-- Vehicles Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+    <div *ngIf="!isLoading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
       <div *ngFor="let vehicle of vehicles" class="group cursor-pointer" (click)="navigateToVehicleDetails(vehicle.id)">
         <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
           <!-- Vehicle Image -->
@@ -117,5 +123,6 @@
         </svg>
       </button>
     </div>
+
   </div>
 </section>
