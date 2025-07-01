@@ -61,13 +61,10 @@ export class CreateVehiclesDto {
   @IsNotEmpty()
   @IsInt()
   seats: number;
+
   @IsArray()
   @IsString({ each: true })
   features: string[];
-
-  @IsOptional()
-  @IsArray()
-  images?: Array<{ url: string; public_id: string }>;
 
   @IsOptional()
   @IsBoolean()

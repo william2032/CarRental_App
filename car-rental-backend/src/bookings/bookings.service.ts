@@ -26,12 +26,10 @@ export class BookingsService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  private transformImages(
-    images: string[],
-  ): { url: string; public_id: string }[] {
-    return images.map((url, index) => ({
-      url,
-      public_id: `car-rental/image_${index}_${Date.now()}`, // Placeholder; replace with actual public_id if available
+  private transformImages(images: { url: string; publicId: string }[]): { url: string; public_id: string }[] {
+    return images.map((image) => ({
+      url: image.url,
+      public_id: image.publicId,
     }));
   }
 
@@ -648,7 +646,12 @@ export class BookingsService {
           pricePerHour: true,
           mileage: true,
           features: true,
-          images: true,
+          images: {
+            select: {
+              url: true,
+              publicId: true,
+            },
+          },
           isAvailable: true,
           condition: true,
         },
@@ -660,6 +663,7 @@ export class BookingsService {
   }
 
   private normalizeBooking(raw: any): BookingWithRelations {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return {
       ...raw,
       vehicle: {

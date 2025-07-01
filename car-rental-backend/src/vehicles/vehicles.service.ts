@@ -1,19 +1,17 @@
-// src/vehicles/vehicles.service.ts
 import {
   BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Vehicle } from './interfaces/vehicle.interface';
 import { CreateVehiclesDto, UpdateVehiclesDto } from './dtos';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { imagesToStrings, stringsToImages } from '../utils/vehicle-image';
 import {
   transformVehicle,
   transformVehicles,
   VehicleWithParsedImages,
 } from './types/vehicle.type';
+import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class VehiclesService {
@@ -25,7 +23,7 @@ export class VehiclesService {
   async create(
     createVehicleDto: CreateVehiclesDto,
     files?: Express.Multer.File[],
-  ): Promise<Vehicle> {
+  ): Promise<VehicleWithParsedImages> {
     let locationId = createVehicleDto.locationId;
 
     if (!locationId) {
@@ -43,17 +41,16 @@ export class VehiclesService {
       locationId = defaultLocation.id;
     }
 
-    let images: Array<{ url: string; public_id: string }> = [];
+    let images: Array<{ url: string; publicId: string }> = [];
 
     if (files && files.length > 0) {
       try {
-        const uploadResults = await Promise.all(
+        const uploadResults: UploadApiResponse[] = await Promise.all(
           files.map((file) => this.cloudinaryService.uploadFile(file)),
         );
-
         images = uploadResults.map((res) => ({
           url: res.secure_url,
-          public_id: res.public_id,
+          publicId: res.public_id,
         }));
       } catch (error) {
         throw new BadRequestException(
@@ -62,29 +59,31 @@ export class VehiclesService {
       }
     }
 
-    // Convert images to strings for database storage
-    const imageStrings = imagesToStrings(images);
-
     const newVehicle = await this.prisma.vehicle.create({
       data: {
         ...createVehicleDto,
         locationId,
         isAvailable: createVehicleDto.isAvailable ?? true,
-        images: imageStrings, // Store as string array
+        images: {
+          create: images.map((image) => ({
+            url: image.url,
+            publicId: image.publicId,
+          })),
+        },
+      },
+      include: {
+        images: true,
+        location: true,
       },
     });
 
-    // Convert back to objects for the response
-    return {
-      ...newVehicle,
-      images: stringsToImages(newVehicle.images), // Convert back to objects
-    };
+    return transformVehicle(newVehicle);
   }
 
   async findOne(id: string): Promise<VehicleWithParsedImages> {
     const vehicle = await this.prisma.vehicle.findUnique({
       where: { id },
-      include: { location: true },
+      include: { images: true, location: true },
     });
 
     if (!vehicle) {
@@ -96,7 +95,7 @@ export class VehiclesService {
 
   async findAll(): Promise<{ vehicles: VehicleWithParsedImages[] }> {
     const vehicles = await this.prisma.vehicle.findMany({
-      include: { location: true },
+      include: { images: true, location: true },
     });
 
     return { vehicles: transformVehicles(vehicles) };
@@ -107,37 +106,35 @@ export class VehiclesService {
     updateVehicleDto: UpdateVehiclesDto,
     files?: Express.Multer.File[],
   ): Promise<VehicleWithParsedImages> {
-    // Changed from Vehicle to VehicleWithParsedImages
     const existingVehicle = await this.prisma.vehicle.findUnique({
       where: { id },
+      include: { images: true },
     });
 
     if (!existingVehicle) {
       throw new NotFoundException(`Vehicle with ID ${id} not found`);
     }
 
-    let images: Array<{ url: string; public_id: string }> = [];
+    let images: Array<{ url: string; publicId: string }> = [];
 
-    // If new files are uploaded, process them
     if (files && files.length > 0) {
       try {
-        const uploadResults = await Promise.all(
+        const uploadResults: UploadApiResponse[] = await Promise.all(
           files.map((file) => this.cloudinaryService.uploadFile(file)),
         );
-
         images = uploadResults.map((res) => ({
           url: res.secure_url,
-          public_id: res.public_id,
+          publicId: res.public_id,
         }));
 
-        // Delete old images from Cloudinary if needed
-        const oldImages = stringsToImages(existingVehicle.images); // Add type cast
-        if (oldImages.length > 0) {
+        // Delete old images from Cloudinary and database
+        if (existingVehicle.images.length > 0) {
           await Promise.all(
-            oldImages.map((img) =>
-              this.cloudinaryService.deleteFile(img.public_id),
+            existingVehicle.images.map((img) =>
+              this.cloudinaryService.deleteFile(img.publicId),
             ),
           );
+          await this.prisma.image.deleteMany({ where: { vehicleId: id } });
         }
       } catch (error) {
         throw new BadRequestException(
@@ -145,37 +142,49 @@ export class VehiclesService {
         );
       }
     } else {
-      // Keep existing images if no new files uploaded
-      images = stringsToImages(existingVehicle.images); // Add type cast
+      images = existingVehicle.images.map((img) => ({
+        url: img.url,
+        publicId: img.publicId,
+      }));
     }
-
-    // Convert images to strings for database storage
-    const imageStrings = imagesToStrings(images);
 
     const updatedVehicle = await this.prisma.vehicle.update({
       where: { id },
       data: {
         ...updateVehicleDto,
-        images: imageStrings,
+        images: {
+          create: images.map((image) => ({
+            url: image.url,
+            publicId: image.publicId,
+          })),
+        },
       },
+      include: { images: true, location: true },
     });
 
     return transformVehicle(updatedVehicle);
   }
 
   async remove(id: string): Promise<void> {
-    const vehicle = await this.prisma.vehicle.findUnique({ where: { id } });
+    const vehicle = await this.prisma.vehicle.findUnique({
+      where: { id },
+      include: { images: true },
+    });
 
     if (!vehicle) {
       throw new NotFoundException(`Vehicle with ID ${id} not found`);
     }
-    const parsedImages = stringsToImages(vehicle.images);
 
-    const deletePromises = parsedImages.map((img) =>
-      this.cloudinaryService.deleteFile(img.public_id),
-    );
-    await Promise.all(deletePromises);
+    // Delete images from Cloudinary
+    if (vehicle.images.length > 0) {
+      await Promise.all(
+        vehicle.images.map((img) =>
+          this.cloudinaryService.deleteFile(img.publicId),
+        ),
+      );
+    }
 
+    // Delete vehicle and related images
     await this.prisma.vehicle.delete({ where: { id } });
   }
 }
