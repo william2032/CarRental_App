@@ -9,7 +9,6 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
-
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { Vehicle } from './interfaces/vehicle.interface';
@@ -31,6 +30,7 @@ import { $Enums } from '../../generated/prisma';
 import UserRole = $Enums.UserRole;
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { VehicleWithParsedImages } from './types/vehicle.type';
 
 @ApiTags('Vehicles')
 @ApiBearerAuth()
@@ -63,8 +63,11 @@ export class VehiclesController {
     description: 'List of all vehicles',
     type: [VehicleResponseDto],
   })
-  findAll(): Promise<Vehicle[]> {
-    return this.vehiclesService.findAll();
+  async findAll(): Promise<{
+    vehicles: { vehicles: VehicleWithParsedImages[] };
+  }> {
+    const vehicles = await this.vehiclesService.findAll();
+    return { vehicles };
   }
 
   @Get(':id')

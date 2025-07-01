@@ -27,7 +27,7 @@ export class TestimonialsComponent {
     },
     {
       id: 2,
-      name: 'Goodman Saul',
+      name: 'Goodman William',
       avatar: "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png",
       rating: 5,
       review: "I've used many booking platforms before, but none compare to the personalized experience and seamless service provided."

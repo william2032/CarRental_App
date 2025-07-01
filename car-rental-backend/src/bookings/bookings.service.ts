@@ -1,18 +1,20 @@
 import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
   BadRequestException,
+  ForbiddenException,
+  Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BookingEmailData, MailerService } from '../mailer/mailer.service';
 import { CreateBookingDto } from './dtos/create-booking.dto';
-import { $Enums, Prisma } from '../../generated/prisma';
-import UserRole = $Enums.UserRole;
-import BookingStatus = $Enums.BookingStatus;
+import { $Enums } from '../../generated/prisma';
 import { UpdateBookingDto } from './dtos/update-bookings.dto';
 import { BookingWithRelations } from './interfaces';
+import { validateImages } from '../utils/vehicle-image';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import UserRole = $Enums.UserRole;
+import BookingStatus = $Enums.BookingStatus;
 
 @Injectable()
 export class BookingsService {
@@ -21,13 +23,24 @@ export class BookingsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailerService: MailerService,
+    private cloudinaryService: CloudinaryService,
   ) {}
+
+  private transformImages(
+    images: string[],
+  ): { url: string; public_id: string }[] {
+    return images.map((url, index) => ({
+      url,
+      public_id: `car-rental/image_${index}_${Date.now()}`, // Placeholder; replace with actual public_id if available
+    }));
+  }
 
   async create(
     createBookingDto: CreateBookingDto,
     userId: string,
     userRole: UserRole,
   ): Promise<BookingWithRelations> {
+    // Validate permissions and input
     this.validateCustomerPermissions(userRole, userId, userId);
 
     await this.validateEntitiesExist(createBookingDto);
@@ -38,6 +51,7 @@ export class BookingsService {
       new Date(createBookingDto.endDate),
     );
 
+    // Prepare booking data
     const bookingData = {
       ...createBookingDto,
       bookingNumber: this.generateBookingNumber(),
@@ -45,26 +59,38 @@ export class BookingsService {
       discountAmount: createBookingDto.discountAmount ?? 0,
     };
 
+    // Create booking
     const booking = await this.prisma.booking.create({
       data: bookingData,
       include: this.getBookingIncludes(),
     });
 
-    // Record status history
+    // Transform vehicle.images to match BookingWithRelations
+    const transformedBooking: BookingWithRelations = {
+      ...booking,
+      vehicle: {
+        ...booking.vehicle,
+        images: this.transformImages(booking.vehicle.images),
+      },
+    };
+
+    // Create status history
     await this.createStatusHistory(
-      booking.id,
-      booking.status,
+      transformedBooking.id,
+      transformedBooking.status,
       userId,
       'Booking created',
     );
 
-    // Send confirmation email to customer
-    await this.sendBookingConfirmationEmail(booking);
+    // Normalize booking
+    const normalized = this.normalizeBooking(transformedBooking);
 
-    // Send notification email to admin
-    await this.sendNewBookingNotificationToAdmin(booking);
+    // Send notifications
+    await this.sendBookingConfirmationEmail(normalized);
+    await this.sendNewBookingNotificationToAdmin(normalized);
 
-    return booking as BookingWithRelations;
+    // Final return
+    return normalized;
   }
 
   async findAll(
@@ -73,11 +99,13 @@ export class BookingsService {
   ): Promise<BookingWithRelations[]> {
     const whereClause = this.buildWhereClause(userRole, userId);
 
-    return this.prisma.booking.findMany({
+    const bookings = await this.prisma.booking.findMany({
       where: whereClause,
       include: this.getBookingIncludes(),
       orderBy: { createdAt: 'desc' },
     });
+
+    return bookings.map((b) => this.normalizeBooking(b));
   }
 
   async findOne(
@@ -93,11 +121,17 @@ export class BookingsService {
     if (!booking) {
       throw new NotFoundException(`Booking with ID ${id} not found`);
     }
+    const transformedBooking: BookingWithRelations = {
+      ...booking,
+      vehicle: {
+        ...booking.vehicle,
+        images: this.transformImages(booking.vehicle.images),
+      },
+    };
 
-    // Validate access permissions
-    this.validateBookingAccess(booking, userId, userRole);
+    this.validateBookingAccess(transformedBooking, userId, userRole);
 
-    return booking as BookingWithRelations;
+    return this.normalizeBooking(booking);
   }
 
   async findPendingBookings(
@@ -109,11 +143,13 @@ export class BookingsService {
       status: BookingStatus.PENDING,
     };
 
-    return this.prisma.booking.findMany({
+    const bookings = await this.prisma.booking.findMany({
       where: whereClause,
       include: this.getBookingIncludes(),
       orderBy: { createdAt: 'desc' },
     });
+
+    return bookings.map((b) => this.normalizeBooking(b));
   }
 
   async update(
@@ -125,7 +161,6 @@ export class BookingsService {
     const existingBooking = await this.findBookingById(id);
     const previousStatus = existingBooking.status;
 
-    // Validate update permissions
     this.validateUpdatePermissions(
       existingBooking,
       userId,
@@ -133,7 +168,6 @@ export class BookingsService {
       updateBookingDto,
     );
 
-    // If vehicle is being changed, validate availability
     if (
       updateBookingDto.vehicleId &&
       updateBookingDto.vehicleId !== existingBooking.vehicleId
@@ -142,7 +176,7 @@ export class BookingsService {
         updateBookingDto.vehicleId,
         new Date(updateBookingDto.startDate ?? existingBooking.startDate),
         new Date(updateBookingDto.endDate ?? existingBooking.endDate),
-        id, // Exclude current booking from availability check
+        id,
       );
     }
 
@@ -152,7 +186,8 @@ export class BookingsService {
       include: this.getBookingIncludes(),
     });
 
-    // Record status change if status was updated
+    const normalized = this.normalizeBooking(updatedBooking);
+
     if (
       updateBookingDto.status &&
       updateBookingDto.status !== existingBooking.status
@@ -164,26 +199,20 @@ export class BookingsService {
         'Booking status updated',
       );
 
-      // Send appropriate email based on status change
       await this.handleStatusChangeEmail(
-        updatedBooking,
+        normalized,
         previousStatus,
         updateBookingDto.status,
       );
     }
 
-    return updatedBooking as BookingWithRelations;
+    return normalized;
   }
 
   async remove(id: string, userId: string, userRole: UserRole): Promise<void> {
     const booking = await this.findBookingById(id);
-
-    // Validate deletion permissions
     this.validateDeletionPermissions(booking, userId, userRole);
-
-    await this.prisma.booking.delete({
-      where: { id },
-    });
+    await this.prisma.booking.delete({ where: { id } });
   }
 
   async cancelBooking(
@@ -193,15 +222,11 @@ export class BookingsService {
     reason?: string,
   ): Promise<BookingWithRelations> {
     const booking = await this.findBookingById(id);
-
-    // Validate cancellation permissions
     this.validateBookingAccess(booking, userId, userRole);
 
-    // Check if booking can be cancelled
     if (booking.status === BookingStatus.CANCELLED) {
       throw new BadRequestException('Booking is already cancelled');
     }
-
     if (booking.status === BookingStatus.ACTIVE) {
       throw new BadRequestException('Cannot cancel an active booking');
     }
@@ -212,7 +237,8 @@ export class BookingsService {
       include: this.getBookingIncludes(),
     });
 
-    // Record cancellation in status history
+    const normalized = this.normalizeBooking(updatedBooking);
+
     await this.createStatusHistory(
       id,
       BookingStatus.CANCELLED,
@@ -220,10 +246,9 @@ export class BookingsService {
       reason || 'Booking cancelled by user',
     );
 
-    // Send cancellation email
-    await this.sendBookingCancellationEmail(updatedBooking, reason);
+    await this.sendBookingCancellationEmail(normalized, reason);
 
-    return updatedBooking as BookingWithRelations;
+    return normalized;
   }
 
   /**
@@ -250,7 +275,8 @@ export class BookingsService {
       include: this.getBookingIncludes(),
     });
 
-    // Record approval in status history
+    const normalized = this.normalizeBooking(updatedBooking);
+
     await this.createStatusHistory(
       id,
       BookingStatus.CONFIRMED,
@@ -258,10 +284,9 @@ export class BookingsService {
       'Booking approved by admin/agent',
     );
 
-    // Send approval email
-    await this.sendBookingApprovalEmail(updatedBooking);
+    await this.sendBookingApprovalEmail(normalized);
 
-    return updatedBooking as BookingWithRelations;
+    return normalized;
   }
 
   /**
@@ -285,11 +310,12 @@ export class BookingsService {
 
     const updatedBooking = await this.prisma.booking.update({
       where: { id },
-      data: { status: BookingStatus.CANCELLED }, // or you could have a REJECTED status
+      data: { status: BookingStatus.CANCELLED },
       include: this.getBookingIncludes(),
     });
 
-    // Record rejection in status history
+    const normalized = this.normalizeBooking(updatedBooking);
+
     await this.createStatusHistory(
       id,
       BookingStatus.CANCELLED,
@@ -297,10 +323,9 @@ export class BookingsService {
       reason || 'Booking rejected by admin/agent',
     );
 
-    // Send rejection email
-    await this.sendBookingRejectionEmail(updatedBooking, reason);
+    await this.sendBookingRejectionEmail(normalized, reason);
 
-    return updatedBooking as BookingWithRelations;
+    return normalized;
   }
 
   // Email sending methods
@@ -581,8 +606,13 @@ export class BookingsService {
     if (!booking) {
       throw new NotFoundException(`Booking with ID ${id} not found`);
     }
-
-    return booking as BookingWithRelations;
+    return {
+      ...booking,
+      vehicle: {
+        ...booking.vehicle,
+        images: this.transformImages(booking.vehicle.images),
+      },
+    };
   }
 
   private getBookingIncludes() {
@@ -593,7 +623,7 @@ export class BookingsService {
           createdAt: true,
           updatedAt: true,
           email: true,
-          password: true,
+          password: false,
           role: true,
           name: true,
           phone: true,
@@ -626,6 +656,16 @@ export class BookingsService {
       Location: true,
       bookingStatusHistory: true,
       payment: true,
+    };
+  }
+
+  private normalizeBooking(raw: any): BookingWithRelations {
+    return {
+      ...raw,
+      vehicle: {
+        ...raw.vehicle,
+        images: validateImages(raw.vehicle?.images),
+      },
     };
   }
 

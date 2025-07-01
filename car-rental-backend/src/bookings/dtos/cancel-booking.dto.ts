@@ -1,3 +1,3 @@
 export class CancelBookingDto {
-    reason?: string;
+  reason?: string;
 }

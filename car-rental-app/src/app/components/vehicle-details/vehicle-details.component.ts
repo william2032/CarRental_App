@@ -107,12 +107,10 @@ export class VehicleDetailsComponent {
     }
     const user = this.authService.getCurrentUser();
     if (!user) {
-      this.errorMessage = 'Sign In or Create an Account';
+      this.errorMessage = 'User not found';
       return;
     }
     this.isBooking = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const totalPrice = this.calculateTotalPrice();
 
@@ -139,7 +137,8 @@ export class VehicleDetailsComponent {
       },
       error: (error) => {
         this.isBooking = false;
-        if (error.message === 'User not authenticated') {
+
+        if (error.message === 'User not authenticated' || 'User not found ') {
           this.errorMessage = 'Please log in to make a booking. You will be redirected to the login page.';
           setTimeout(() => {
             this.router.navigate(['/login']);

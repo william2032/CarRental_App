@@ -3,9 +3,9 @@
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex items-center">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 cursor-pointer">
           <!--          logo-->
-          <span class="text-[28px]  tracking-[4px] font-[600]  font-montserrat text-gray-900">SafariRentals</span>
+          <span (click)="navigateToAboutUs()" class="text-[28px]  tracking-[4px] font-[600]  font-montserrat text-gray-900">SafariRentals</span>
         </div>
       </div>
 
@@ -13,7 +13,7 @@
       <nav class="hidden md:flex items-center space-x-8">
         <a routerLink="/vehicles" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</a>
         <a routerLink="/vehicles" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Cars</a>
-        <a routerLink="/about-us" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</a>
+        <a routerLink="/home/about-us" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</a>
       </nav>
 
       <!-- Search and Actions -->

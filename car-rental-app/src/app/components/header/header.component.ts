@@ -38,10 +38,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToLogin(): void {
     this.router.navigate(['/login']);
   }
+  navigateToAboutUs():void {
+    this.router.navigate(['/home/about-us']);
+  }
 
   logout(): void {
     this.showLogoutModal = true;
-
     setTimeout(() => {
       this.authService.logout();
       this.showLogoutModal = false;

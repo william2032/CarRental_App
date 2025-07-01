@@ -56,7 +56,7 @@ export interface Booking {
     mileage: number | null;
     condition: VehicleCondition;
     features: string[];
-    images: string[];
+    images: { url: string; public_id: string }[];
     isAvailable: boolean;
   };
   Location: {

@@ -4,6 +4,7 @@ import FuelType = $Enums.FuelType;
 import TransmissionType = $Enums.TransmissionType;
 import Decimal = Prisma.Decimal;
 import VehicleCondition = $Enums.VehicleCondition;
+import { IsArray, IsOptional } from 'class-validator';
 
 export class VehicleResponseDto {
   @ApiProperty()
@@ -39,8 +40,17 @@ export class VehicleResponseDto {
   @ApiProperty({ type: [String] })
   features: string[];
 
-  @ApiProperty({ type: [String] })
-  images: string[];
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        url: { type: 'string' },
+        public_id: { type: 'string' },
+      },
+    },
+  })
+  images: { url: string; public_id: string }[];
 
   @ApiProperty()
   isAvailable: boolean;

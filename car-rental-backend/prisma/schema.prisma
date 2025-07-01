@@ -41,7 +41,7 @@ model Vehicle {
   pricePerHour Decimal?         @db.Decimal(10, 2)
   mileage      Int?
   features     String[]
-  images       String[]
+  images       String[]         @default([])
 
   isAvailable Boolean          @default(true)
   createdAt   DateTime         @default(now())
