@@ -20,7 +20,8 @@
         <!-- Vehicle Image -->
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
           <img
-            [src]="vehicle.images[0]"
+            *ngIf="vehicle.imageUrls?.length"
+            [src]="vehicle.imageUrls[0]"
             [alt]="vehicle.make + ' ' + vehicle.model"
             class="w-full h-80 object-cover"
           >

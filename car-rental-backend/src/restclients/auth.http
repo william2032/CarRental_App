@@ -41,7 +41,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@shopie.com",
+  "email": "kivindukilonzo@gmail.com",
   "password": "admin123456"
 }
 

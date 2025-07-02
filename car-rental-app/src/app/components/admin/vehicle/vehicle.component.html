@@ -1,0 +1,217 @@
+<h2 class="text-2xl font-bold mb-2">Add New Car</h2>
+<p class="text-gray-600 mb-6">
+  Fill in details to list a new car for booking, including pricing,
+  availability, and specifications.
+</p>
+
+<div *ngIf="formError" class="text-red-600 mb-4">{{ formError }}</div>
+
+<form class="space-y-4" (ngSubmit)="submitVehicle()">
+  <!-- Image Upload -->
+  <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center">
+    <input
+      type="file"
+      (change)="onImageSelected($event)"
+      multiple
+      class="hidden"
+      #fileInput
+    />
+    <div (click)="fileInput.click()" class="cursor-pointer">
+      <i class="fa-solid fa-cloud-upload text-4xl text-blue-600 mb-2"></i>
+      <p class="text-sm text-gray-600">Upload pictures of your car</p>
+    </div>
+    <div class="flex gap-2 mt-2 justify-center">
+      <img
+        *ngFor="let url of images"
+        [src]="url"
+        class="w-20 h-20 object-cover rounded"
+       alt="car"/>
+    </div>
+  </div>
+
+  <!-- Basic Info -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block mb-1 text-gray-700">Make *</label>
+      <input
+        [(ngModel)]="make"
+        name="make"
+        placeholder="e.g. BMW, Mercedes, Toyota"
+        class="border p-2 rounded w-full"
+        required
+      />
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Model *</label>
+      <input
+        [(ngModel)]="model"
+        name="model"
+        placeholder="e.g. X5, E-Class, Camry"
+        class="border p-2 rounded w-full"
+        required
+      />
+    </div>
+  </div>
+
+  <!-- Year, Price, Seats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block mb-1 text-gray-700">Year *</label>
+      <input
+        [(ngModel)]="year"
+        name="year"
+        type="number"
+        placeholder="2024"
+        class="border p-2 rounded w-full"
+        required
+      />
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Daily Price (KES) *</label>
+      <input
+        [(ngModel)]="pricePerDay"
+        name="pricePerDay"
+        type="number"
+        placeholder="5000"
+        (blur)="calculateHourlyRate()"
+        class="border p-2 rounded w-full"
+        required
+      />
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Seating Capacity *</label>
+      <input
+        [(ngModel)]="seats"
+        name="seats"
+        type="number"
+        placeholder="5"
+        class="border p-2 rounded w-full"
+        required
+      />
+    </div>
+  </div>
+
+  <!-- Category and Location -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block mb-1 text-gray-700">Category *</label>
+      <select
+        [(ngModel)]="category"
+        name="category"
+        class="border p-2 rounded w-full"
+        required
+      >
+        <option value="" disabled>Select a category</option>
+        <option *ngFor="let cat of categories" [value]="cat.name">
+          {{ cat.displayName }}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Location *</label>
+      <select
+        [(ngModel)]="locationId"
+        name="locationId"
+        class="border p-2 rounded w-full"
+        required
+      >
+        <option value="" disabled>Select location</option>
+        <option *ngFor="let loc of locations" [value]="loc.id">
+          {{ loc.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Transmission, Fuel, Condition -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block mb-1 text-gray-700">Transmission *</label>
+      <select
+        [(ngModel)]="transmission"
+        name="transmission"
+        class="border p-2 rounded w-full"
+        required
+      >
+        <option value="" disabled>Select transmission</option>
+        <option *ngFor="let trans of transmissions" [value]="trans">
+          {{ trans }}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Fuel Type *</label>
+      <select
+        [(ngModel)]="fuelType"
+        name="fuelType"
+        class="border p-2 rounded w-full"
+        required
+      >
+        <option value="" disabled>Select fuel type</option>
+        <option *ngFor="let fuel of fuelTypes" [value]="fuel">
+          {{ fuel }}
+        </option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Condition *</label>
+      <select
+        [(ngModel)]="condition"
+        name="condition"
+        class="border p-2 rounded w-full"
+        required
+      >
+        <option *ngFor="let cond of conditions" [value]="cond">
+          {{ cond }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Optional Fields -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block mb-1 text-gray-700">Mileage (km)</label>
+      <input
+        [(ngModel)]="mileage"
+        name="mileage"
+        type="number"
+        placeholder="50000"
+        class="border p-2 rounded w-full"
+      />
+    </div>
+    <div>
+      <label class="block mb-1 text-gray-700">Hourly Price (KES)</label>
+      <input
+        [(ngModel)]="pricePerHour"
+        name="pricePerHour"
+        type="number"
+        placeholder="Auto-calculated"
+        class="border p-2 rounded w-full"
+      />
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div>
+    <label class="block mb-2 text-gray-700">Features</label>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+      <label *ngFor="let feature of availableFeatures" class="flex items-center">
+        <input
+          type="checkbox"
+          (change)="onFeatureChange(feature, $event)"
+          class="mr-2"
+        />
+        {{ feature }}
+      </label>
+    </div>
+  </div>
+
+  <button
+    type="submit"
+    [disabled]="uploading || !category"
+    class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
+  >
+    {{ uploading ? 'Uploading...' : '✓ List Your Car' }}
+  </button>
+</form>

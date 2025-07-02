@@ -24,19 +24,23 @@ export class FeaturedVehiclesComponent implements OnInit {
   ngOnInit(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (vehicles) => {
-        this.vehicles = vehicles.map((v: Vehicle) => ({
-          id: v.id,
-          name: `${v.make} ${v.model}`,
-          seats: v.seats,
-          category: v.category,
-          price: v.pricePerDay,
-          image: v.images[0] ,
-          transmission: v.transmission,
-          location: v.location?.name,
-          year: v.year,
-          gasoline: v.fuelType,
-          available: v.isAvailable,
-        }));
+        this.vehicles = vehicles.map((v: Vehicle) => {
+          const primaryImage = v.images?.find(img => img.isPrimary)?.url || '';
+          return {
+            id: v.id,
+            name: `${v.make} ${v.model}`,
+            seats: v.seats,
+            category: v.category,
+            price: v.pricePerDay,
+            image: primaryImage,
+            transmission: v.transmission,
+            location: v.location?.name,
+            year: v.year,
+            gasoline: v.fuelType,
+            available: v.isAvailable,
+          };
+        });
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -45,4 +49,5 @@ export class FeaturedVehiclesComponent implements OnInit {
       },
     });
   }
+
 }

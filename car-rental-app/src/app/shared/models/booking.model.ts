@@ -30,6 +30,15 @@ export interface Booking {
   vehicle?: Vehicle;
 }
 
+export enum BookingStatus {
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  CONFIRMED = 'CONFIRMED',
+  ACTIVE =     'ACTIVE',
+
+}
 
 
 

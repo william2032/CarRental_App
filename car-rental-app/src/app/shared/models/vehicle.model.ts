@@ -1,5 +1,12 @@
 import {Location} from './location.model';
 
+export interface VehicleImage {
+  id: string;
+  url: string;
+  isPrimary: boolean;
+  vehicleId: string;
+}
+
 export interface Vehicle {
   id: string;
   make: string;
@@ -13,7 +20,7 @@ export interface Vehicle {
   pricePerHour?: number;
   mileage?: number;
   features: string[];
-  images: string[];
+  images: VehicleImage[];
   isAvailable: boolean;
   condition: string;
   location: Location,

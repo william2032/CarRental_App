@@ -12,10 +12,17 @@ export class VehiclesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createVehicleDto: CreateVehiclesDto): Promise<Vehicle> {
-    let locationId = createVehicleDto.locationId;
+    const {
+      images,
+      locationId: providedLocationId,
+      isAvailable = true,
+      ...vehicleData
+    } = createVehicleDto;
+
+    let finalLocationId = providedLocationId;
 
     // If not provided, fetch the first available active location
-    if (!locationId) {
+    if (!finalLocationId) {
       const defaultLocation = await this.prisma.location.findFirst({
         where: { isActive: true },
         orderBy: { createdAt: 'asc' },
@@ -26,29 +33,37 @@ export class VehiclesService {
           'No active locations available to assign to this vehicle.',
         );
       }
-
-      locationId = defaultLocation.id;
+      finalLocationId = defaultLocation.id;
     }
 
     return this.prisma.vehicle.create({
       data: {
-        ...createVehicleDto,
-        locationId,
-        isAvailable: createVehicleDto.isAvailable ?? true,
+        ...vehicleData,
+        isAvailable,
+        locationId: finalLocationId,
+        images:
+          images && images.length > 0
+            ? {
+                create: images.map((url, index) => ({
+                  url,
+                  isPrimary: index === 0,
+                })),
+              }
+            : undefined,
       },
     });
   }
 
   async findAll(): Promise<Vehicle[]> {
     return this.prisma.vehicle.findMany({
-      include: { location: true },
+      include: { location: true, images: true },
     });
   }
 
   async findOne(id: string): Promise<Vehicle> {
     const vehicle = await this.prisma.vehicle.findUnique({
       where: { id },
-      include: { location: true },
+      include: { location: true, images: true },
     });
     if (!vehicle) {
       throw new NotFoundException(`Vehicle with ID ${id} not found`);
@@ -64,9 +79,10 @@ export class VehiclesService {
     if (!vehicle) {
       throw new NotFoundException(`Vehicle with ID ${id} not found`);
     }
+    const { images, ...updateData } = updateVehicleDto;
     return this.prisma.vehicle.update({
       where: { id },
-      data: updateVehicleDto,
+      data: updateData,
     });
   }
 

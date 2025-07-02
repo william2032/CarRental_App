@@ -89,7 +89,6 @@ export class BookingService {
       this.router.navigate(['/login']);
       return throwError(() => new Error('User not authenticated'));
     }
-
     return this.http.get<Booking[]>(
       `${this.apiUrl}/bookings`,
       {headers: this.getAuthHeaders()}

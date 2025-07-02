@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsBoolean,
-  IsDecimal,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -41,7 +40,6 @@ export class CreateVehiclesDto {
   @IsEnum(TransmissionType)
   transmission: TransmissionType;
 
-
   @Transform(({ value }) => parseFloat(value))
   @IsNumber(
     { maxDecimalPlaces: 2 },
@@ -69,7 +67,8 @@ export class CreateVehiclesDto {
 
   @IsArray()
   @IsString({ each: true })
-  images: string[];
+  @IsOptional()
+  images?: string[];
 
   @IsOptional()
   @IsBoolean()

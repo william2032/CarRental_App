@@ -9,6 +9,7 @@ import {NgClass, NgForOf, NgIf, TitleCasePipe} from '@angular/common';
 
 @Component({
   selector: 'app-my-booking',
+  standalone: true,
   imports: [
     HeaderComponent,
     FooterComponent,
