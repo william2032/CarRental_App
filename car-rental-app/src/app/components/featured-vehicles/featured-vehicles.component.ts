@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import {VehicleService} from '../../services/vehicle.service';
 import {DisplayVehicle, Vehicle} from '../../shared/models/vehicle.model';
+import {AdminDashboardComponent} from '../admin-dashboard/admin-dashboard.component';
 
 @Component({
   selector: 'app-featured-vehicles',
@@ -32,7 +33,7 @@ export class FeaturedVehiclesComponent implements OnInit {
           price: v.pricePerDay,
           image: v.images[0] ,
           transmission: v.transmission,
-          location: v.location?.name,
+          locationId: v.locationId,
           year: v.year,
           gasoline: v.fuelType,
           available: v.isAvailable,

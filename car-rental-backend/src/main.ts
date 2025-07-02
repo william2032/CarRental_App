@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,12 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Configure body-parser for JSON with a 1MB limit
+  app.use(bodyParser.json({ limit: '5mb' }));
+
+  // Configure body-parser for URL-encoded data with a 1MB limit
+  app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,6 +34,7 @@ async function bootstrap() {
       },
     }),
   );
+
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Car Rental API')

@@ -38,7 +38,7 @@
         </button>
           <button
             *ngIf="isLoggedIn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
-            <span  (click)="navigateToLogin()">Dashboard</span>
+            <span  (click)="navigateToAdmin()">Dashboard</span>
           </button>
           <span *ngIf="isLoggedIn" (click)="logout()" class="cursor-pointer font-montserrat">Log Out</span>
 

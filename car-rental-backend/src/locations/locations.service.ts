@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Location } from './interfaces/location.interface';
-import {CreateLocationDto, UpdateLocationDto} from "./dtos";
+import { CreateLocationDto, UpdateLocationDto } from './dtos';
 
 @Injectable()
 export class LocationsService {

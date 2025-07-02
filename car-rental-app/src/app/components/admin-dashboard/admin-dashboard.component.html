@@ -1,0 +1,95 @@
+<div class="min-h-screen flex bg-gray-50">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-lg border-r border-gray-200">
+    <div class="p-6">
+      <div class="flex items-center space-x-3 mb-8">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-car text-white text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Admin Panel</h2>
+          <p class="text-xs text-gray-500">{{currentUser?.name || 'Administrator'}}</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <div *ngIf="currentUser?.role === 'ADMIN'" class="space-y-2">
+          <a routerLink="./"
+             routerLinkActive="bg-blue-50 border-r-2 border-blue-500 text-blue-700"
+             class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-chart-line w-5"></i>
+            <span class="font-medium">Overview</span>
+          </a>
+
+          <a routerLink="/admin/add-vehicles"
+             routerLinkActive="bg-blue-50 border-r-2 border-blue-500 text-blue-700"
+             class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-plus-circle w-5"></i>
+            <span class="font-medium">Add Car</span>
+          </a>
+
+          <a routerLink="./manage-cars"
+             routerLinkActive="bg-blue-50 border-r-2 border-blue-500 text-blue-700"
+             class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-car w-5"></i>
+            <span class="font-medium">Manage Cars</span>
+          </a>
+        </div>
+
+        <a routerLink="/admin/bookings"
+           routerLinkActive="bg-blue-50 border-r-2 border-blue-500 text-blue-700"
+           class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+          <i class="fas fa-calendar-check w-5"></i>
+          <span class="font-medium">Manage Bookings</span>
+        </a>
+      </nav>
+
+      <!-- Stats Cards (if on overview) -->
+      <div *ngIf="stats && !loading" class="mt-8 space-y-3">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-blue-100 text-sm">Total Cars</p>
+              <p class="text-2xl font-bold">{{stats.totalVehicles}}</p>
+            </div>
+            <i class="fas fa-car text-blue-200 text-xl"></i>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-green-100 text-sm">Active Bookings</p>
+              <p class="text-2xl font-bold">{{stats.totalBookings}}</p>
+            </div>
+            <i class="fas fa-calendar text-green-200 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile & Logout -->
+    <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-white">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+          <i class="fas fa-user text-gray-600 text-sm"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">{{currentUser?.name}}</p>
+          <p class="text-xs text-gray-500 truncate">{{currentUser?.role}}</p>
+        </div>
+      </div>
+      <button (click)="logout()"
+              class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors duration-200">
+        <i class="fas fa-sign-out-alt text-sm"></i>
+        <span class="text-sm font-medium">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 overflow-auto">
+    <ng-content></ng-content>
+  </main>
+</div>

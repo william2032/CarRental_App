@@ -49,10 +49,10 @@ export class AuthService {
           this.setSession(response);
 
           this.userSubject.next(response.user)
-          if (response.user.role.toUpperCase() === 'ADMIN') {
+          if (response.user.role.toUpperCase() === 'ADMIN' || response.user.role.toUpperCase() === 'AGENT') {
             this.router.navigate(['/admin']);
           } else {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           }
         }),
         catchError(this.handleError)

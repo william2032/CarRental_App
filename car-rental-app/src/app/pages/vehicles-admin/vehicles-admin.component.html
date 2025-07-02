@@ -1,0 +1,527 @@
+<app-admin-dashboard></app-admin-dashboard>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">Add New Vehicle</h1>
+          <p class="text-lg text-gray-600">Fill in the details below to list a new car for booking</p>
+        </div>
+        <div class="hidden lg:block">
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-car text-blue-600 text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900">Quick Add</p>
+                <p class="text-xs text-gray-500">Vehicle Management</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div *ngIf="uploading"
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-xl p-8 flex flex-col items-center space-y-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p class="text-gray-700 font-medium">Processing your request...</p>
+      </div>
+    </div>
+
+    <!-- General Error Alert -->
+    <div *ngIf="generalError" class="mb-6 bg-red-50 border-l-4 border-red-400 rounded-lg p-4 shadow-sm">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-red-800 font-medium">{{ generalError }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="formSubmitted && isFormValid && !generalError"
+         class="mb-6 bg-green-50 border-l-4 border-green-400 rounded-lg p-4 shadow-sm">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="fas fa-check-circle text-green-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-green-800 font-medium">Form is valid! Ready to submit.</p>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="space-y-8">
+      <!-- Image Upload Section -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+          <h3 class="text-xl font-semibold text-white flex items-center">
+            <i class="fas fa-images mr-3"></i>
+            Vehicle Images
+            <span class="ml-auto text-blue-100 text-sm">{{ selectedFiles.length }}/10</span>
+          </h3>
+        </div>
+
+        <div class="p-6">
+          <!-- Upload Area -->
+          <div
+            class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 cursor-pointer group"
+            (click)="fileInput.click()">
+            <input #fileInput
+                   type="file"
+                   (change)="onImageSelected($event)"
+                   multiple
+                   accept="image/jpeg,image/png,image/webp"
+                   class="hidden"/>
+            <div class="space-y-4">
+              <div
+                class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-300">
+                <i class="fas fa-cloud-upload-alt text-3xl text-blue-500"></i>
+              </div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Upload Vehicle Images</h4>
+                <p class="text-gray-500 mb-4">Drag and drop your images here, or click to browse</p>
+                <div
+                  class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
+                  <i class="fas fa-plus mr-2"></i>
+                  Choose Files
+                </div>
+              </div>
+              <p class="text-xs text-gray-400">
+                Supported formats: JPEG, PNG, WebP • Max size: 5MB per image • Max 10 images
+              </p>
+            </div>
+          </div>
+
+          <!-- Upload Error -->
+          <div *ngIf="uploadError" class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+              <span class="text-red-700">{{ uploadError }}</span>
+            </div>
+          </div>
+
+          <!-- Image Preview Grid -->
+          <div *ngIf="previewUrls.length > 0" class="mt-6">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Selected Images ({{ previewUrls.length }})</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <div *ngFor="let url of previewUrls; let i = index; trackBy: trackByUrl"
+                   class="relative group">
+                <img [src]="url"
+                     class="w-full h-24 object-cover rounded-lg border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200"
+                     alt="Vehicle Image"/>
+                <div
+                  class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-all duration-200 flex items-center justify-center">
+                  <button type="button"
+                          (click)="removeImage(i)"
+                          class="opacity-0 group-hover:opacity-100 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition-all duration-200">
+                    <i class="fas fa-trash text-sm"></i>
+                  </button>
+                </div>
+                <div
+                  class="absolute top-2 left-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                  {{ i + 1 }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Validation Error -->
+          <div *ngIf="formErrors['files']" class="mt-4 text-red-600 text-sm font-medium">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            {{ formErrors['files'] }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Information Section -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+          <h3 class="text-xl font-semibold text-white flex items-center">
+            <i class="fas fa-car mr-3"></i>
+            Vehicle Information
+          </h3>
+        </div>
+
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Brand -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Brand <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input formControlName="brand"
+                       placeholder="e.g. BMW, Mercedes, Toyota"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['brand']"
+                       [class.focus:ring-red-500]="formErrors['brand']"
+                       [class.focus:border-red-500]="formErrors['brand']"/>
+                <i class="fas fa-tag absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['brand']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['brand'] }}
+              </p>
+            </div>
+
+            <!-- Model -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Model <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input formControlName="model"
+                       placeholder="e.g. X5, E-Class, Camry"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['model']"
+                       [class.focus:ring-red-500]="formErrors['model']"
+                       [class.focus:border-red-500]="formErrors['model']"/>
+                <i class="fas fa-car-side absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['model']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['model'] }}
+              </p>
+            </div>
+
+            <!-- Year -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Year <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input formControlName="year"
+                       type="number"
+                       min="1990"
+                       max="2026"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['year']"
+                       [class.focus:ring-red-500]="formErrors['year']"
+                       [class.focus:border-red-500]="formErrors['year']"/>
+                <i class="fas fa-calendar-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['year']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['year'] }}
+              </p>
+            </div>
+
+            <!-- Daily Rate -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Daily Rate (KES) <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input formControlName="dailyRate"
+                       type="number"
+                       min="1"
+                       step="0.01"
+                       placeholder="5000"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['dailyRate']"
+                       [class.focus:ring-red-500]="formErrors['dailyRate']"
+                       [class.focus:border-red-500]="formErrors['dailyRate']"/>
+                <i
+                  class="fas fa-money-bill-wave absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['dailyRate']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['dailyRate'] }}
+              </p>
+            </div>
+
+            <!-- Price Per Hour -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Price Per Hour (KES)
+              </label>
+              <div class="relative">
+                <input formControlName="pricePerHour"
+                       type="number"
+                       min="0"
+                       step="0.01"
+                       placeholder="10.00"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['pricePerHour']"
+                       [class.focus:ring-red-500]="formErrors['pricePerHour']"
+                       [class.focus:border-red-500]="formErrors['pricePerHour']"/>
+                <i
+                  class="fas fa-money-bill-wave absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['pricePerHour']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['pricePerHour'] }}
+              </p>
+            </div>
+
+            <!-- Category -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Category <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <select formControlName="category"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12 appearance-none bg-white"
+                        [class.border-red-300]="formErrors['category']"
+                        [class.focus:ring-red-500]="formErrors['category']"
+                        [class.focus:border-red-500]="formErrors['category']">
+                  <option value="" disabled>Select a category</option>
+                  <option *ngFor="let cat of categories; trackBy: trackByIndex" [value]="cat.id">
+                    {{ cat.name }}
+                  </option>
+                </select>
+                <i class="fas fa-list absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i
+                  class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+              </div>
+              <p *ngIf="formErrors['category']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['category'] }}
+              </p>
+            </div>
+
+            <!-- Transmission -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Transmission <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <select formControlName="transmission"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12 appearance-none bg-white"
+                        [class.border-red-300]="formErrors['transmission']"
+                        [class.focus:ring-red-500]="formErrors['transmission']"
+                        [class.focus:border-red-500]="formErrors['transmission']">
+                  <option value="" disabled>Select transmission</option>
+                  <option *ngFor="let trans of transmissionTypes; trackBy: trackByIndex" [value]="trans">
+                    {{ trans }}
+                  </option>
+                </select>
+                <i class="fas fa-cogs absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i
+                  class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+              </div>
+              <p *ngIf="formErrors['transmission']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['transmission'] }}
+              </p>
+            </div>
+
+            <!-- Fuel Type -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Fuel Type <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <select formControlName="fuelType"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12 appearance-none bg-white"
+                        [class.border-red-300]="formErrors['fuelType']"
+                        [class.focus:ring-red-500]="formErrors['fuelType']"
+                        [class.focus:border-red-500]="formErrors['fuelType']">
+                  <option value="" disabled>Select fuel type</option>
+                  <option *ngFor="let fuel of fuelTypes; trackBy: trackByIndex" [value]="fuel">
+                    {{ fuel }}
+                  </option>
+                </select>
+                <i class="fas fa-gas-pump absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <i
+                  class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+              </div>
+              <p *ngIf="formErrors['fuelType']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['fuelType'] }}
+              </p>
+            </div>
+
+            <!-- Seating Capacity -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Seating Capacity <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input formControlName="seatingCapacity"
+                       type="number"
+                       min="2"
+                       max="15"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['seatingCapacity']"
+                       [class.focus:ring-red-500]="formErrors['seatingCapacity']"
+                       [class.focus:border-red-500]="formErrors['seatingCapacity']"/>
+                <i class="fas fa-users absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['seatingCapacity']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['seatingCapacity'] }}
+              </p>
+            </div>
+
+            <!-- Mileage -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                Mileage (km)
+              </label>
+              <div class="relative">
+                <input formControlName="mileage"
+                       type="number"
+                       min="0"
+                       placeholder="50000"
+                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12"
+                       [class.border-red-300]="formErrors['mileage']"
+                       [class.focus:ring-red-500]="formErrors['mileage']"
+                       [class.focus:border-red-500]="formErrors['mileage']"/>
+                <i class="fas fa-tachometer-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <p *ngIf="formErrors['mileage']" class="text-red-600 text-sm mt-1">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                {{ formErrors['mileage'] }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="mt-6 space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">
+              Location <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <select formControlName="locationId"
+                      class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 pl-12 appearance-none bg-white"
+                      [class.border-red-300]="formErrors['locationId']"
+                      [class.focus:ring-red-500]="formErrors['locationId']"
+                      [class.focus:border-red-500]="formErrors['locationId']">
+                <option value="" disabled>Select Location</option>
+                <option *ngFor="let loc of locations; trackBy: trackByIndex" [value]="loc.id">
+                  {{ loc.name }}, {{ loc.city }}
+                </option>
+              </select>
+              <i class="fas fa-map-marker-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <i
+                class="fas fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            </div>
+            <p *ngIf="formErrors['locationId']" class="text-red-600 text-sm mt-1">
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              {{ formErrors['locationId'] }}
+            </p>
+          </div>
+
+          <!-- Condition -->
+          <div class="mt-6 space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">
+              Vehicle Condition <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-3 gap-4">
+              <div *ngFor="let condition of conditionTypes; trackBy: trackByIndex"
+                   class="relative">
+                <input type="radio"
+                       [id]="'condition-' + condition"
+                       [value]="condition"
+                       formControlName="condition"
+                       class="sr-only peer"/>
+                <label [for]="'condition-' + condition"
+                       class="flex items-center justify-center px-4 py-3 border-2 border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 transition-all duration-200">
+                  <span class="font-medium">{{ condition }}</span>
+                </label>
+              </div>
+            </div>
+            <p *ngIf="formErrors['condition']" class="text-red-600 text-sm mt-1">
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              {{ formErrors['condition'] }}
+            </p>
+          </div>
+
+          <!-- Availability -->
+          <div class="mt-6 space-y-2">
+            <label class="block text-sm font-semibold text-gray-700">
+              Availability
+            </label>
+            <div class="relative">
+              <input formControlName="isAvailable"
+                     type="checkbox"
+                     class="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"/>
+              <span class="ml-2 text-gray-600">Is the vehicle available for booking?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-green-500 to-teal-600 px-6 py-4">
+          <h3 class="text-xl font-semibold text-white flex items-center">
+            <i class="fas fa-star mr-3"></i>
+            Vehicle Features
+            <span class="ml-auto text-green-100 text-sm">{{ vehicleForm.get('features')?.value?.length || 0 }}
+              selected</span>
+          </h3>
+        </div>
+
+        <div class="p-6">
+          <p class="text-gray-600 mb-4">Select the features available in this vehicle</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div *ngFor="let feature of availableFeatures; trackBy: trackByFeature"
+                 class="relative">
+              <button type="button"
+                      (click)="toggleFeature(feature)"
+                      class="w-full text-left px-4 py-3 border-2 border-gray-300 rounded-xl hover:border-gray-400 transition-all duration-200 flex items-center space-x-3"
+                      [class.border-green-500]="isFeatureSelected(feature)"
+                      [class.bg-green-50]="isFeatureSelected(feature)"
+                      [class.text-green-700]="isFeatureSelected(feature)">
+                <div class="flex-shrink-0">
+                  <div class="w-5 h-5 border-2 border-gray-400 rounded flex items-center justify-center"
+                       [class.border-green-500]="isFeatureSelected(feature)"
+                       [class.bg-green-500]="isFeatureSelected(feature)">
+                    <i *ngIf="isFeatureSelected(feature)" class="fas fa-check text-white text-xs"></i>
+                  </div>
+                </div>
+                <span class="text-sm font-medium">{{ feature }}</span>
+              </button>
+            </div>
+          </div>
+          <p *ngIf="formErrors['features']" class="text-red-600 text-sm mt-4">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            {{ formErrors['features'] }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 text-sm text-gray-600">
+              <div class="w-3 h-3 rounded-full"
+                   [class.bg-green-500]="isFormValid"
+                   [class.bg-gray-300]="!isFormValid"></div>
+              <span>{{ isFormValid ? 'Form is valid' : 'Please complete all required fields' }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button type="button"
+                    (click)="resetForm()"
+                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium">
+              <i class="fas fa-undo mr-2"></i>
+              Reset Form
+            </button>
+
+            <button type="submit"
+                    [disabled]="!canSubmit"
+                    class="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl flex items-center space-x-2">
+              <i *ngIf="uploading" class="fas fa-spinner fa-spin"></i>
+              <i *ngIf="!uploading && isFormValid" class="fas fa-check"></i>
+              <i *ngIf="!uploading && !isFormValid" class="fas fa-exclamation-triangle"></i>
+              <span>{{ uploading ? 'Processing...' : 'List Vehicle' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Vehicle } from '../shared/models/vehicle.model';
+import {CreateVehicle, Vehicle} from '../shared/models/vehicle.model';
 import {environment} from '../../environments/environment';
 import {AuthService} from './auth.service';
 
@@ -31,5 +31,9 @@ export class VehicleService {
 
   getVehicleById(id: string): Observable<Vehicle> {
     return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  addVehicle(formData: FormData): Observable<Vehicle> {
+    return this.http.post<Vehicle>(`${this.apiUrl}`, formData, { headers: this.getHeaders() });
   }
 }
