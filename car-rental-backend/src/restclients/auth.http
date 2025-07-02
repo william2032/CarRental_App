@@ -21,7 +21,7 @@ Content-Type: application/json
 
 {
   "email": "kivindukilonzo@gmail.com",
-  "password": "admin123456",
+  "password": "admin123",
   "phone": "0798678778",
   "name": "Admin ",
   "role": "ADMIN"
@@ -41,7 +41,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@shopie.com",
+  "email": "kivindukilonzo@gmail.com",
   "password": "admin123456"
 }
 

@@ -40,7 +40,7 @@ export class VehicleResponseDto {
   features: string[];
 
   @ApiProperty({ type: [String] })
-  images: string[];
+  imageUrls: string[];
 
   @ApiProperty()
   isAvailable: boolean;

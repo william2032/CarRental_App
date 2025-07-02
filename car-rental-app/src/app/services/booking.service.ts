@@ -60,7 +60,9 @@ export class BookingService {
         );
 
         if (hasExistingBooking) {
+          setTimeout(() => this.router.navigate(['/bookings']),1500)
           return throwError(() => new Error('Sorry! We have already received your request!'));
+
         } else {
           return this.http.post<Booking>(`${this.apiUrl}/bookings`, bookingData, {
             headers: this.getAuthHeaders()

@@ -17,7 +17,6 @@ export interface Vehicle {
   pricePerHour?: Decimal | null;
   mileage?: number | null;
   features: string[];
-  images: string[];
   isAvailable: boolean;
   createdAt: Date;
   updatedAt: Date;

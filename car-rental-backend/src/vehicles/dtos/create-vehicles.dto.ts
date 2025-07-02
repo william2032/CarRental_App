@@ -69,7 +69,8 @@ export class CreateVehiclesDto {
 
   @IsArray()
   @IsString({ each: true })
-  images: string[];
+  @IsOptional()
+  imageUrls?: string[];
 
   @IsOptional()
   @IsBoolean()

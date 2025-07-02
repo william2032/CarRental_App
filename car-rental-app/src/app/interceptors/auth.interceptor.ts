@@ -8,27 +8,26 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Get the auth token from the service
-  const authToken = authService.getToken();
+  const token = authService.getToken();
 
-  // Clone the request and add the authorization header if token exists
-  if (authToken) {
+  if (req.url.includes('cloudinary.com')) {
+    return next(req);
+  }
+
+  if (token) {
     req = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
-  // Handle the request and catch any errors
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // If we get a 401 Unauthorized error, logout the user
       if (error.status === 401) {
         authService.logout();
         router.navigate(['/auth']);
       }
-
       return throwError(() => error);
     })
   );

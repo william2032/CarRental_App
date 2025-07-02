@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:3000
 @customertoken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNobDBpMXAwMDAwdGI3bzJ4aXU4cG1iIiwiZW1haWwiOiJyb2NreDIwNjBAZ21haWwuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzUxMjAwODcyLCJleHAiOjE3NTEyODcyNzJ9.W4tZr-qspmpntMq0GN41JOXUj0n55TZGhPiDSlKGhJE
-@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNobHJyOWQwMDAxdGI3b3VvN3A3ZmFpIiwiZW1haWwiOiJraXZpbmR1a2lsb256b0BnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTExOTc0OTIsImV4cCI6MTc1MTI4Mzg5Mn0.mIaz6aHvoOvQnQrqH1Gb8OJk5h5UjdepoRkxIDG_baY
+@adminToken =  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWNobHJyOWQwMDAxdGI3b3VvN3A3ZmFpIiwiZW1haWwiOiJraXZpbmR1a2lsb256b0BnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTE0MjU1MDEsImV4cCI6MTc1MTUxMTkwMX0.diyoPEM7PlpSi3TKs551wvCGNq9ukmwK199b3qgC_wU
 
 @vehicleId = cmce7pnd50001tbww0o7nimx0
 ### Create Vehicle (ADMIN or AGENT only)
@@ -10,8 +10,8 @@ Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "make": "BMW",
-  "model": "X6",
+  "make": "Mercedes",
+  "model": "GlS Coupe",
   "year": 2022,
   "fuelType": "PETROL",
   "seats": 5,

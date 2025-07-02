@@ -27,6 +27,13 @@ model User {
 
   @@map("users")
 }
+model VehicleImage {
+  id        String  @id @default(uuid())
+  url       String
+  isPrimary Boolean @default(false)
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+}
 
 model Vehicle {
   id           String           @id @default(cuid())
@@ -41,20 +48,28 @@ model Vehicle {
   pricePerHour Decimal?         @db.Decimal(10, 2)
   mileage      Int?
   features     String[]
-  images       String[]
-
-  isAvailable Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  condition   VehicleCondition @default(EXCELLENT)
-
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  images       VehicleImage[]
+  availability Availability[]
+  isAvailable  Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  condition    VehicleCondition @default(EXCELLENT)
+  locationId   String
+  location     Location         @relation(fields: [locationId], references: [id])
 
   bookings Booking[]
   reviews  Review[]
 
   @@map("vehicles")
+}
+
+model Availability {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  startDate   DateTime
+  endDate     DateTime
+  isAvailable Boolean  @default(true)
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
 }
 
 model Location {

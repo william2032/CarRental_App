@@ -32,4 +32,7 @@ export class VehicleService {
   getVehicleById(id: string): Observable<Vehicle> {
     return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
+  addVehicle(formData: FormData): Observable<Vehicle> {
+    return this.http.post<Vehicle>(`${this.apiUrl}`, formData, { headers: this.getHeaders() });
+  }
 }
