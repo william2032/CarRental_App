@@ -4,9 +4,9 @@ POST {{baseUrl}}/locations
 Content-Type: application/json
 
 {
-  "name": "Chuka Town",
+  "name": "Makueni",
   "address": "123 Main St",
-  "city": "Chuka",
+  "city": "Nairobi",
   "country": "Kenya",
   "isActive": true
 }

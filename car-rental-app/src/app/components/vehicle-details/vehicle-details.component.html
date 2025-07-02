@@ -20,11 +20,12 @@
         <!-- Vehicle Image -->
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
           <img
-            *ngIf="vehicle.imageUrls?.length"
-            [src]="vehicle.imageUrls[0]"
+            *ngIf="vehicle.images?.length"
+            [src]="vehicle.images[0].url"
             [alt]="vehicle.make + ' ' + vehicle.model"
-            class="w-full h-80 object-cover"
-          >
+            class="w-full h-80 object-cover rounded-xl shadow-lg transition-transform duration-300 hover:scale-105"
+          />
+
         </div>
 
         <!-- Vehicle Title and Specs -->
