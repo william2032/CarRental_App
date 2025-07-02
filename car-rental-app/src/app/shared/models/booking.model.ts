@@ -1,4 +1,5 @@
 import {Vehicle} from './vehicle.model';
+import {User} from './user.model';
 
 export interface CreateBookingDto {
   userId: string;
@@ -24,10 +25,11 @@ export interface Booking {
   baseAmount: number;
   totalAmount: number;
   discountAmount: number;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'ACTIVE' | 'REJECTED';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'  | 'REJECTED';
   createdAt: string;
   updatedAt: string;
   vehicle?: Vehicle;
+  user?: User;
 }
 
 export enum BookingStatus {
@@ -36,7 +38,7 @@ export enum BookingStatus {
   CANCELLED = 'CANCELLED',
   COMPLETED = 'COMPLETED',
   CONFIRMED = 'CONFIRMED',
-  ACTIVE =     'ACTIVE',
+  // ACTIVE =     'ACTIVE',
 
 }
 

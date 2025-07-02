@@ -123,6 +123,12 @@ export class BookingService {
     );
   }
 
+  updateBookingStatus(bookingId: string, status: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/bookings/${bookingId}/status`, {
+      status,
+    });
+  }
+
   updateBooking(id: string, updateData: Partial<CreateBookingDto>): Observable<Booking> {
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login']);

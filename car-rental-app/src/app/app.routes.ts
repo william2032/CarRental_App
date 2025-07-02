@@ -36,6 +36,18 @@ export const routes: Routes = [
           import('./components/admin/vehicle/vehicle.component').then(
             (m) => m.VehiclesPage),
       },
+      {
+        path:'manage-bookings',
+        loadComponent: () =>
+          import('./components/admin/manage-booking/manage-booking.component').then(
+            (m) => m.ManageBookingsComponent),
+      },
+      {
+        path:'manage-cars',
+        loadComponent: () =>
+          import('./components/admin/manage-cars/manage-cars.component').then(
+            (m) => m.ManageCarsComponent),
+      },
     ],
   },
 

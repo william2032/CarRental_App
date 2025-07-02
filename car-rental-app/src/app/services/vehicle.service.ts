@@ -24,9 +24,18 @@ export class VehicleService {
       'Content-Type': 'application/json'
     });
   }
+  deleteVehicle(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  toggleAvailability(id: string, isAvailable: boolean): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/vehicles/${id}/availability`, {
+      isAvailable,
+    }, { headers: this.getHeaders() });
+  }
 
   getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<Vehicle[]>(`${this.apiUrl}`, { headers: this.getHeaders() });
   }
 
   getVehicleById(id: string): Observable<Vehicle> {

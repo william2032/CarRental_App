@@ -1,0 +1,157 @@
+<div class="p-8 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Manage Cars</h1>
+      <p class="text-lg text-gray-600">
+        View all listed cars, update their details, or remove them from the booking platform
+      </p>
+    </div>
+
+    <!-- Stats Cards (Optional) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Cars</p>
+            <p class="text-3xl font-bold text-gray-900">{{ vehicles.length || 0 }}</p>
+          </div>
+          <div class="p-3 bg-blue-100 rounded-xl">
+            <i class="fas fa-car text-blue-600 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Available</p>
+            <p class="text-3xl font-bold text-green-600">{{ getAvailableCarsCount() }}</p>
+          </div>
+          <div class="p-3 bg-green-100 rounded-xl">
+            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Unavailable</p>
+            <p class="text-3xl font-bold text-red-600">{{ getUnavailableCarsCount() }}</p>
+          </div>
+          <div class="p-3 bg-red-100 rounded-xl">
+            <i class="fas fa-times-circle text-red-600 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cars Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let car of vehicles" class="group">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <!-- Car Image -->
+          <div class="relative h-56 overflow-hidden">
+            <img
+              [src]="car?.images?.[0]?.url || 'https://via.placeholder.com/400x240?text=No+Image'"
+              [alt]="car.make + ' ' + car.model"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <!-- Status Badge -->
+            <div class="absolute top-4 left-4">
+              <span
+                [ngClass]="{
+                  'bg-green-400 text-white px-[10px] py-[8px] rounded-md text-sm font-medium shadow-lg': car.isAvailable,
+                  'bg-red-400 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg': !car.isAvailable
+                }"
+              >
+                {{ car.isAvailable ? "Available" : "Unavailable" }}
+              </span>
+            </div>
+            <!-- Price Badge -->
+            <div class="absolute top-4 right-4">
+              <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+                KES {{ car.pricePerDay }}/day
+              </span>
+            </div>
+          </div>
+
+          <!-- Car Details -->
+          <div class="p-6">
+            <!-- Car Name & Category -->
+            <div class="mb-4">
+              <h3 class="text-xl font-bold text-gray-900 mb-1">
+                {{ car.make }} {{ car.model }}
+              </h3>
+              <p class="text-gray-500 text-sm">{{ car.category }} {{ car.year }}</p>
+            </div>
+
+            <!-- Car Specs -->
+            <div class="flex items-center gap-4 mb-4 text-sm text-gray-600">
+              <div class="flex items-center gap-1">
+                <i class="fas fa-user text-gray-400"></i>
+                <span>{{ car.seats }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <i class="fas fa-gas-pump text-gray-400"></i>
+                <span>{{ car.fuelType }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <i class="fas fa-cogs text-gray-400"></i>
+                <span>{{ car.transmission }}</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <i class="fas fa-map-marker-alt text-gray-400"></i>
+                <span>Location</span>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-6">
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-bold text-gray-900">KSh {{ car.pricePerDay }}</span>
+                <span class="text-gray-500">/day</span>
+              </div>
+              <div *ngIf="car.pricePerHour" class="text-sm text-gray-500">
+                KSh {{ car.pricePerHour }}/hour
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+              <button
+                (click)="toggleAvailability(car)"
+                class="px-2 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold text-[10px] transition-colors duration-200"
+              >
+                {{ car.isAvailable ? 'Mark Unavailable' : 'Mark Available' }}
+              </button>
+
+              <button
+                (click)="deleteVehicle(car.id)"
+                class="px-2 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold text-[10px] transition-colors duration-200"
+                title="Delete vehicle"
+              >
+                Delete Vehicle
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!vehicles || vehicles.length === 0" class="text-center py-16">
+      <div class="max-w-md mx-auto">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-car text-4xl text-gray-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">No cars listed yet</h3>
+        <p class="text-gray-500 mb-6">Start by adding your first vehicle to the platform</p>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200">
+          Add Your First Car
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

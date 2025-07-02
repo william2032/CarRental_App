@@ -1,81 +1,203 @@
 <div class="p-6">
   <h2 class="text-2xl font-semibold mb-2">Manage Bookings</h2>
   <p class="text-gray-500 mb-4">
-    Track all customer bookings, approve or cancel requests, and manage booking
-    statuses
+    Track all customer bookings, approve or cancel requests, and manage booking statuses
   </p>
 
-  <div *ngIf="loading" class="text-gray-600">Loading bookings...</div>
+  <!-- Tab Navigation -->
+  <div class="mb-6">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <button
+          (click)="switchTab('all')"
+          [class]="selectedTab === 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+        >
+          All Bookings ({{ bookings.length }})
+        </button>
+        <button
+          (click)="switchTab('pending')"
+          [class]="selectedTab === 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm"
+        >
+          Pending Bookings ({{ pendingBookings.length }})
+        </button>
+      </nav>
+    </div>
+  </div>
+  <!-- Summary Cards -->
+  <div *ngIf="!loading && selectedTab === 'all'" class="m-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="text-2xl font-bold text-blue-600">{{ getTotalBookings() }}</div>
+      <div class="text-sm text-gray-600">Total Bookings</div>
+    </div>
 
-  <div *ngIf="!loading && bookings.length === 0" class="text-gray-500">
-    No bookings found.
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="text-2xl font-bold text-yellow-600">
+        {{ getBookingCountByStatus('PENDING') }}
+      </div>
+      <div class="text-sm text-gray-600">Pending Approval</div>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="text-2xl font-bold text-green-600">
+        {{ getBookingCountByStatus('CONFIRMED') }}
+      </div>
+      <div class="text-sm text-gray-600">Confirmed</div>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow">
+      <div class="text-2xl font-bold text-red-600">
+        {{ getBookingCountByStatus('CANCELLED') }}
+      </div>
+      <div class="text-sm text-gray-600">Cancelled</div>
+    </div>
   </div>
 
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-8">
+    <div class="text-gray-600">Loading bookings...</div>
+    <div class="mt-2">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && getCurrentBookings().length === 0" class="text-center py-8">
+    <div class="text-gray-500">
+      {{ selectedTab === 'pending' ? 'No pending bookings found.' : 'No bookings found.' }}
+    </div>
+  </div>
+
+  <!-- Bookings Table -->
   <div
-    *ngIf="!loading && bookings.length > 0"
+    *ngIf="!loading && getCurrentBookings().length > 0"
     class="overflow-x-auto bg-white rounded-lg shadow"
   >
     <table class="w-full text-sm text-left">
       <thead class="bg-gray-50">
       <tr>
-        <th class="px-6 py-3">Car</th>
-        <th class="px-6 py-3">Date Range</th>
-        <th class="px-6 py-3">Total</th>
-        <th class="px-6 py-3">Status</th>
-        <th class="px-6 py-3">Actions</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Car</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Customer</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Date Range</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Total</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Status</th>
+        <th class="px-6 py-3 font-medium text-gray-900">Actions</th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let booking of bookings" class="border-t">
-        <td class="px-6 py-4 flex items-center gap-3">
-          <img
-            [src]="booking.vehicle.image"
-            class="w-10 h-10 rounded object-cover"
-          />
-          <div>
-            <div class="font-medium">{{ booking.vehicle.name }}</div>
-            <div class="text-xs text-gray-500">
-              {{ booking.vehicle.model }}
+      <tr *ngFor="let booking of getCurrentBookings()" class="border-t hover:bg-gray-50">
+        <!-- Car Information -->
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-3">
+            <img
+              [src]="booking.vehicle?.images?.[0]?.url || '/assets/default-car.jpg'"
+              [alt]="getCarDisplayName(booking.vehicle)"
+              class="h-16 w-20 object-cover rounded-lg"
+              onerror="this.src='/assets/default-car.jpg'"
+            />
+            <div>
+              <div class="font-medium text-gray-900">{{ booking.vehicle?.make || 'N/A' }}</div>
+              <div class="text-sm text-gray-500">{{ booking.vehicle?.model || 'N/A' }}</div>
             </div>
           </div>
         </td>
+
+        <!-- Customer Information -->
         <td class="px-6 py-4">
-          {{ booking.startDate | date : "M/d/yyyy" }} to
-          {{ booking.endDate | date : "M/d/yyyy" }}
+          <div class="text-sm">
+            <div class="font-medium text-gray-900">{{ booking.user?.name || 'N/A' }}</div>
+            <div class="text-gray-500">{{ booking.user?.email || 'N/A' }}</div>
+          </div>
         </td>
-        <td class="px-6 py-4">Ksh {{ booking.totalPrice || 0 }}</td>
+
+        <!-- Date Range -->
+        <td class="px-6 py-4">
+          <div class="text-sm">
+            <div class="font-medium text-gray-900">
+              {{ booking.startDate | date : "MMM d, y" }}
+            </div>
+            <div class="text-gray-500">
+              to {{ booking.endDate | date : "MMM d, y" }}
+            </div>
+          </div>
+        </td>
+
+        <!-- Total Amount -->
+        <td class="px-6 py-4">
+          <div class="text-sm font-medium text-gray-900">
+            Ksh {{ (booking.totalAmount | number:'1.2-2') || '0.00' }}
+          </div>
+        </td>
+
+        <!-- Status -->
         <td class="px-6 py-4">
             <span
-              class="px-2 py-1 rounded-full text-xs"
-              [ngClass]="{
-                'bg-yellow-100 text-yellow-800': booking.status === 'PENDING',
-                'bg-green-100 text-green-800':
-                  booking.status === 'CONFIRMED' ||
-                  booking.status === 'APPROVED',
-                'bg-red-100 text-red-800':
-                  booking.status === 'REJECTED' ||
-                  booking.status === 'CANCELLED'
-              }"
+              class="px-2 py-1 rounded-full text-xs font-medium"
+              [ngClass]="getStatusClass(booking.status)"
             >
               {{ getStatusLabel(booking.status) }}
             </span>
         </td>
-        <td class="px-6 py-4">
-          <select
-            [(ngModel)]="booking.status"
-            (change)="updateStatus(booking.id, booking.status)"
-            class="border px-2 py-1 rounded"
-          >
-            <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-          </select>
 
-          <button
-            class="ml-2 text-red-500 text-sm hover:underline"
-            (click)="cancelBooking(booking.id)"
-            [disabled]="booking.status === 'CANCELLED'"
-          >
-            Cancel
-          </button>
+        <!-- Actions -->
+        <td class="px-6 py-4">
+          <div class="flex flex-col gap-2">
+            <!-- Quick Actions for Pending Bookings -->
+            <div *ngIf="canApproveReject(booking)" class="flex gap-2">
+              <button
+                (click)="approveBooking(booking.id)"
+                class="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+              >
+                Approve
+              </button>
+              <button
+                (click)="rejectBooking(booking.id)"
+                class="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-colors"
+              >
+                Reject
+              </button>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="flex items-center gap-2">
+              <select
+                [ngModel]="booking.status"
+                (ngModelChange)="updateStatus(booking.id, $event)"
+                class="border border-gray-300 px-2 py-1 rounded text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option *ngFor="let status of statuses" [value]="status">
+                  {{ getStatusLabel(status) }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Additional Actions -->
+            <div class="flex gap-2">
+              <button
+                (click)="viewBookingDetails(booking.id)"
+                class="text-blue-600 text-xs hover:underline"
+              >
+                View Details
+              </button>
+
+              <button
+                *ngIf="canCancelBooking(booking)"
+                (click)="cancelBooking(booking.id)"
+                class="text-orange-600 text-xs hover:underline"
+              >
+                Cancel
+              </button>
+
+              <button
+                (click)="deleteBooking(booking.id)"
+                class="text-red-600 text-xs hover:underline"
+                title="Permanently delete this booking"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </td>
       </tr>
       </tbody>
