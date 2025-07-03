@@ -415,7 +415,7 @@ export class BookingsService {
       startDate: booking.startDate,
       endDate: booking.endDate,
       totalAmount: booking.totalAmount,
-      locationName: booking.Location?.name,
+      locationName: booking.location?.name,
       bookingId: booking.id,
     };
   }
@@ -503,7 +503,20 @@ export class BookingsService {
   }
 
   private buildWhereClause(userRole: UserRole, userId: string) {
-    return userRole === UserRole.CUSTOMER ? { userId } : {};
+    // If user is admin, return all bookings
+    if (userRole === UserRole.ADMIN) {
+      return {};
+    }
+    if (userRole === UserRole.CUSTOMER) {
+      return {
+        userId: userId,
+      };
+    }
+
+    // Default case - return user's bookings
+    return {
+      userId: userId,
+    };
   }
 
   private validateBookingAccess(
@@ -593,7 +606,7 @@ export class BookingsService {
           createdAt: true,
           updatedAt: true,
           email: true,
-          password: true,
+          password: false,
           role: true,
           name: true,
           phone: true,
@@ -623,7 +636,7 @@ export class BookingsService {
           condition: true,
         },
       },
-      Location: true,
+      location: true,
       bookingStatusHistory: true,
       payment: true,
     };

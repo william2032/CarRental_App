@@ -1,18 +1,26 @@
 <!-- Main Authentication Container -->
-<div class="max-h-[100%] bg-gray-50 flex flex-row px-12 pt-7 pb-10 sm:px-6 lg:px-8">
-  <div  *ngIf="currentMode">
+<div class="min-h-screen bg-gray-900 flex flex-col justify-center px-12 py-10 sm:px-6 lg:px-8 relative overflow-hidden">
+  <!-- Dark BMW Background Image -->
+  <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+       style="background-image: url('https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+  </div>
+
+  <!-- Dark overlay for better text contrast -->
+  <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+  <div *ngIf="currentMode" class="relative z-10 w-full">
     <!-- Header Section -->
     <div class="sm:mx-auto sm:w-full sm:max-w-md justify-center text-center">
-      <h1 class="text-[58px]  tracking-[4px] font-[600]  font-montserrat text-gray-900 mb-20 ">SafariRentals</h1>
+      <h1 class="text-[58px] tracking-[4px] font-[600] font-montserrat text-white mb-20 drop-shadow-lg">SafariRentals</h1>
 
-      <div class="text-center">
-        <h2 class="text-[29px] font-semibold text-gray-500" [ngSwitch]="currentMode">
+      <div class="text-center bg-black bg-opacity-30 backdrop-blur-sm rounded-lg p-8 border border-gray-700">
+        <h2 class="text-[29px] font-semibold text-white" [ngSwitch]="currentMode">
           <span *ngSwitchCase="'login'">Sign in to your account</span>
           <span *ngSwitchCase="'register'">Create your account</span>
           <span *ngSwitchCase="'forgot-password'">Reset your password</span>
           <span *ngSwitchCase="'reset-password'">Set new password</span>
         </h2>
-        <p class="mt-2 text-[17px] text-gray-500" [ngSwitch]="currentMode">
+        <p class="mt-2 text-[17px] text-gray-300" [ngSwitch]="currentMode">
           <span *ngSwitchCase="'login'">Welcome back! Please sign in to book your ride.</span>
           <span *ngSwitchCase="'register'">Join us to start your Booking experience.</span>
           <span *ngSwitchCase="'forgot-password'">Enter your email to receive a reset link.</span>

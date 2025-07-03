@@ -60,7 +60,7 @@ export interface BookingWithRelations {
     features: string[];
     isAvailable: boolean;
   };
-  Location: {
+  location: {
     id: string;
     name: string;
     address: string;
