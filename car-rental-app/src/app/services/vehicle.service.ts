@@ -41,4 +41,9 @@ export class VehicleService {
   getVehicleById(id: string): Observable<Vehicle> {
     return this.http.get<Vehicle>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
+  editVehicle(id: string, updatedData: Partial<Vehicle>): Observable<Vehicle> {
+    return this.http.patch<Vehicle>(`${this.apiUrl}/${id}`, updatedData, {
+      headers: this.getHeaders(),
+    });
+  }
 }

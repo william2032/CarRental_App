@@ -4,7 +4,7 @@ POST {{baseUrl}}/locations
 Content-Type: application/json
 
 {
-  "name": "Makueni",
+  "name": "Mombasa",
   "address": "123 Main St",
   "city": "Nairobi",
   "country": "Kenya",

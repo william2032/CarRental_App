@@ -1,24 +1,152 @@
-<section class="py-16 lg:py-24 bg-white">
+<header>
+  <app-header></app-header>
+
+</header>
+
+<section class="py-16 lg:py-24 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Section Header -->
-    <div class="mb-8 flex  flex-col justify-center items-center mx-auto space-y-8">
-      <h2 class="text-3xl lg:text-4xl font-bold text-gray-900  ">
-        Featured Vehicles
-      </h2>
-      <p class="text-lg text-gray-600 max-w-2xl  ">
-        Explore our selection of premium vehicles available for your next adventure.
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        All Vehicles
+      </h1>
+      <p class="text-lg text-gray-600">
+        Find the perfect vehicle for your needs
       </p>
     </div>
+
+    <!-- Search and Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+      <!-- Search Bar -->
+      <div class="mb-6">
+        <div class="relative">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+            placeholder="Search by make, model, category, location..."
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+          />
+          <svg class="absolute left-3 top-3.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+        <!-- Category Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <select
+            [(ngModel)]="selectedCategory"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+        </div>
+
+        <!-- Transmission Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
+          <select
+            [(ngModel)]="selectedTransmission"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">All Types</option>
+            <option *ngFor="let transmission of transmissionTypes" [value]="transmission">{{ transmission }}</option>
+          </select>
+        </div>
+
+        <!-- Location Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+          <select
+            [(ngModel)]="selectedLocation"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">All Locations</option>
+            <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+          </select>
+        </div>
+
+        <!-- Price Range -->
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Price Range (KES/day)</label>
+          <div class="flex space-x-2">
+            <input
+              type="number"
+              [(ngModel)]="minPrice"
+              (input)="onFilterChange()"
+              placeholder="Min"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              type="number"
+              [(ngModel)]="maxPrice"
+              (input)="onFilterChange()"
+              placeholder="Max"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Filters -->
+      <div class="flex flex-wrap items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <label class="flex items-center">
+            <input
+              type="checkbox"
+              [(ngModel)]="showAvailableOnly"
+              (change)="onFilterChange()"
+              class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span class="ml-2 text-sm text-gray-700">Available only</span>
+          </label>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-gray-600">{{ totalResults }} vehicles found</span>
+          <button
+            (click)="clearFilters()"
+            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Clear all filters
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Loading State -->
-    <div *ngIf="isLoading || errorMessage" class="text-center mb-12   flex  flex-col justify-center h-64">
-      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 items-center mx-auto "></div>
-      <span *ngIf="isLoading && !errorMessage">Please wait...or refresh the page</span>
-      <span *ngIf="errorMessage">{{ errorMessage }}</span>
+    <div *ngIf="isLoading || errorMessage" class="text-center mb-12 flex flex-col justify-center h-64">
+      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 items-center mx-auto"></div>
+      <span *ngIf="isLoading && !errorMessage">Loading vehicles...</span>
+      <span *ngIf="errorMessage" class="text-red-600">{{ errorMessage }}</span>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!isLoading && !errorMessage && filteredVehicles.length === 0" class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No vehicles found</h3>
+      <p class="text-gray-600 mb-4">Try adjusting your search criteria or filters</p>
+      <button
+        (click)="clearFilters()"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+      >
+        Clear filters
+      </button>
     </div>
 
     <!-- Vehicles Grid -->
-    <div *ngIf="!isLoading && !errorMessage" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-      <div *ngFor="let vehicle of vehicles" class="group cursor-pointer" (click)="navigateToVehicleDetails(vehicle.id)">
+    <div *ngIf="!isLoading && !errorMessage && filteredVehicles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+      <div *ngFor="let vehicle of filteredVehicles" class="group cursor-pointer" (click)="navigateToVehicleDetails(vehicle.id)">
         <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
           <!-- Vehicle Image -->
           <div class="relative">
@@ -26,7 +154,7 @@
               [src]="vehicle.image"
               [alt]="vehicle.name"
               class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-            >
+            />
             <!-- Price Badge -->
             <div class="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
               KES {{ vehicle.price }}/day
@@ -38,11 +166,10 @@
             >
               {{ vehicle.available ? 'Available' : 'Booked' }}
             </div>
-
           </div>
 
           <!-- Vehicle Details -->
-          <div class="p-6 ">
+          <div class="p-6">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <h3 class="text-xl font-bold text-gray-900 mb-1">{{ vehicle.name }}</h3>
@@ -51,8 +178,9 @@
                 </p>
               </div>
             </div>
+
             <!-- Vehicle Features -->
-            <div class="flex  items-center space-x-1 pl-3">
+            <div class="flex items-center space-x-1 pl-3 mb-4">
               <svg viewBox="0 0 26 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
                 <path
                   d="M16.719 19.7519L16.0785 14.6279C15.8908 13.1266 14.6146 12 13.1017 12H10.8983C9.38538 12 8.10917 13.1266 7.92151 14.6279L7.28101 19.7519C7.1318 20.9456 8.06257 22 9.26556 22H14.7344C15.9374 22 16.8682 20.9456 16.719 19.7519Z"
@@ -71,14 +199,13 @@
             </div>
 
             <div class="flex items-center space-x-4 text-sm text-gray-600 mb-4">
-              <div class="flex items-center ">
-                <svg viewBox="-20 0 190 190" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#9d8080"
-                     class="h-10 w-10">
+              <div class="flex items-center">
+                <svg viewBox="-20 0 190 190" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#9d8080" class="h-10 w-10">
                   <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M101.25 133.22C101.25 129.5 101.18 117.57 101.18 114.06C101.18 109.73 100.89 107.59 95.18 107.06C95.09 119.49 95 132.17 95 139H99.15L98.97 147.5L43 147.3L42.65 139H47.32C47.15 124.16 46.62 77.82 46.47 73C46.29 67.25 49.16 63.84 55.99 63.66C62.82 63.48 80.76 63.12 86.68 63.3C92.6 63.48 95.33 65.94 95.33 73.84C95.33 76.93 95.27 88.32 95.2 101.06C105.03 101.98 107.2 106.95 107.2 114.06C107.2 117.55 107.27 130.43 107.27 133.22C107.27 137.01 113.88 137.35 113.88 133.08C113.88 129.98 113.88 102.08 113.88 102.08L105.98 94.71L107.1 83.9L99.2 75.75L103 71.31L119.81 88.06C119.81 88.06 119.95 121.43 119.95 133.06C119.95 144.69 101.25 144.33 101.25 133.22ZM53 73.41C53 73.41 53.31 80.74 53.31 90.23C53.31 104.9 88.77 104.16 88.77 90.08C88.77 82.17 88.93 73.08 88.93 73.08L53 73.41Z"
                         fill="#858080"/>
                 </svg>
-                <span class="">{{ vehicle.gasoline }}</span>
+                <span>{{ vehicle.gasoline }}</span>
               </div>
               <div class="flex items-center space-x-1">
                 <svg viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4">
@@ -92,7 +219,6 @@
                     d="M17.25 15C17.25 14.5858 17.5858 14.25 18 14.25H20.2857C21.6612 14.25 22.75 15.3839 22.75 16.75C22.75 17.8285 22.0713 18.7624 21.1086 19.1077L22.6396 21.6084C22.8559 21.9616 22.7449 22.4234 22.3916 22.6396C22.0384 22.8559 21.5766 22.7449 21.3604 22.3916L19.4369 19.25H18.75V22C18.75 22.4142 18.4142 22.75 18 22.75C17.5858 22.75 17.25 22.4142 17.25 22V15ZM18.75 17.75H20.2857C20.8038 17.75 21.25 17.3169 21.25 16.75C21.25 16.1831 20.8038 15.75 20.2857 15.75H18.75V17.75Z"
                     fill="#505258"/>
                 </svg>
-
                 <span>{{ vehicle.transmission }}</span>
               </div>
 
@@ -103,7 +229,6 @@
            16.991-10 17zm0-29C5.373 0 0 5.373 0 12c0 5.018 10.005 20.011 12 20 1.964.011 12-15.061 12-20
            0-6.627-5.373-12-12-12z"/>
                 </svg>
-
                 <span>{{ vehicle.location }}</span>
               </div>
             </div>
@@ -111,18 +236,9 @@
         </div>
       </div>
     </div>
-
-    <!-- View All Button -->
-    <div class="text-center mt-12">
-      <button
-        (click)="navigateToAllVehicles()"
-        class="inline-flex items-center border border-gray-400  hover:border-gray-800  rounded-md space-x-2 px-[18px] py-[8px] text-blue-600 hover:text-blue-700 font-medium transition-colors ">
-        <span>Explore all cars</span>
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-        </svg>
-      </button>
-    </div>
-
   </div>
 </section>
+
+<footer>
+  <app-footer></app-footer>
+</footer>

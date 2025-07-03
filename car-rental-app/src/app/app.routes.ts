@@ -6,12 +6,14 @@ import {MyBookingsComponent} from './components/my-booking/my-booking.component'
 import {AboutUsComponent} from './components/about-us/about-us.component';
 import {AuthInterceptor} from './guards/auth.guard';
 import {AdminDashboardPage} from './components/admin/admin.component';
+import {AllVehiclesComponent} from './components/all-vehicles/all-vehicles.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'vehicles/:id', component: VehicleDetailsComponent },
   { path: 'bookings', component: MyBookingsComponent },
   { path: 'about-us', component: AboutUsComponent },
+  { path: 'all-vehicles', component: AllVehiclesComponent },
 
   {
     path: 'admin',

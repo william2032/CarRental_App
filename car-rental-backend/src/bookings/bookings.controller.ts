@@ -188,7 +188,7 @@ export class BookingsController {
    * Approve a booking (Admin/Agent only)
    */
   @Post(':id/approve')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.AGENT)
   @HttpCode(HttpStatus.OK)
   approve(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
@@ -203,7 +203,7 @@ export class BookingsController {
    * Reject a booking (Admin/Agent only)
    */
   @Post(':id/reject')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.AGENT)
   @HttpCode(HttpStatus.OK)
   reject(
@@ -223,7 +223,7 @@ export class BookingsController {
    * Get pending bookings (Admin/Agent only)
    */
   @Get('status/pending')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.AGENT)
   getPendingBookings(@Req() req: AuthenticatedRequest) {
     return this.bookingsService.findPendingBookings(

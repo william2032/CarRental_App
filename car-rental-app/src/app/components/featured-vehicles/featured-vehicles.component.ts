@@ -16,15 +16,21 @@ export class FeaturedVehiclesComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
 
+  constructor(private vehicleService: VehicleService, private router: Router) {}
 
-  constructor(private vehicleService: VehicleService,private router: Router) {}
   navigateToVehicleDetails(vehicleId: string): void {
     this.router.navigate(['/vehicles', vehicleId]);
   }
+
+  navigateToAllVehicles(): void {
+    this.router.navigate(['/all-vehicles']);
+  }
+
   ngOnInit(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (vehicles) => {
-        this.vehicles = vehicles.map((v: Vehicle) => {
+        // Map all vehicles first
+        const allVehicles = vehicles.map((v: Vehicle) => {
           const primaryImage = v.images?.find(img => img.isPrimary)?.url || '';
           return {
             id: v.id,
@@ -41,6 +47,16 @@ export class FeaturedVehiclesComponent implements OnInit {
           };
         });
 
+        // Filter to show only 6 cars (preferably available ones first)
+        this.vehicles = allVehicles
+          .sort((a, b) => {
+            // Sort by availability first (available cars first)
+            if (a.available && !b.available) return -1;
+            if (!a.available && b.available) return 1;
+            return 0;
+          })
+          .slice(0, 6);
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -49,5 +65,4 @@ export class FeaturedVehiclesComponent implements OnInit {
       },
     });
   }
-
 }

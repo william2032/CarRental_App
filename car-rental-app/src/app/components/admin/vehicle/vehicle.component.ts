@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { HttpBackend, HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
-import { CategoryService } from '../../../services/category.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule, NgForm} from '@angular/forms';
+import {Router} from '@angular/router';
+import {HttpBackend, HttpClient} from '@angular/common/http';
+import {environment} from '../../../../environments/environment';
+import {CategoryService} from '../../../services/category.service';
 
 @Component({
   selector: 'app-vehicles-page',
@@ -121,7 +121,7 @@ export class VehiclesPage implements OnInit {
     }
   }
 
-  submitVehicle() {
+  submitVehicle(form: NgForm) {
     // Validation
     if (!this.category || this.category === '') {
       this.formError = 'Please select a category.';
@@ -161,7 +161,11 @@ export class VehiclesPage implements OnInit {
     this.http.post(`${environment.apiUrl}/vehicles`, payload).subscribe({
       next: () => {
         alert('Vehicle listed successfully!');
-        this.router.navigate(['/dashboard/manage-cars']);
+        form.resetForm({condition: 'EXCELLENT'});
+        this.features = [];
+        this.images = [];
+        this.formError = '';
+        this.router.navigate(['/admin/manage-cars']);
       },
       error: (err) => {
         this.formError = err.error.message || 'Failed to list vehicle.';

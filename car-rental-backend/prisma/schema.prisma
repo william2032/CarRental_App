@@ -33,7 +33,9 @@ model VehicleImage {
   url       String
   isPrimary Boolean @default(false)
   vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_images")
 }
 
 model Vehicle {
@@ -56,7 +58,7 @@ model Vehicle {
   updatedAt    DateTime         @updatedAt
   condition    VehicleCondition @default(EXCELLENT)
   locationId   String
-  location     Location         @relation(fields: [locationId], references: [id])
+  location     Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
 
   bookings Booking[]
   reviews  Review[]
@@ -70,7 +72,9 @@ model Availability {
   startDate   DateTime
   endDate     DateTime
   isAvailable Boolean  @default(true)
-  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("availability")
 }
 
 model Location {
@@ -95,27 +99,33 @@ model Booking {
   bookingNumber String @unique @default(cuid())
 
   // user and vehicle
-  userId               String
-  user                 User                   @relation(fields: [userId], references: [id])
-  vehicleId            String
-  vehicle              Vehicle                @relation(fields: [vehicleId], references: [id])
-  // dates and time and pickupstations
-  startDate            DateTime
-  endDate              DateTime
-  pickupLocation       String
-  returnLocation       String
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  // dates and time and pickup stations
+  startDate      DateTime
+  endDate        DateTime
+  pickupLocation String
+  returnLocation String
+
   // pricing
-  baseAmount           Decimal                @db.Decimal(10, 2)
-  discountAmount       Decimal                @default(0) @db.Decimal(10, 2)
-  totalAmount          Decimal                @db.Decimal(10, 2)
+  baseAmount     Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
+
   // status
-  status               BookingStatus          @default(PENDING)
-  type                 BookingType            @default(REQUEST)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  status BookingStatus @default(PENDING)
+  type   BookingType   @default(REQUEST)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
   payment              PaymentMethod?
   bookingStatusHistory BookingStatusHistory[]
-  Location             Location?              @relation(fields: [locationId], references: [id])
+  location             Location?              @relation(fields: [locationId], references: [id], onDelete: Cascade)
   locationId           String?
 
   @@map("bookings")
@@ -124,7 +134,7 @@ model Booking {
 model PaymentMethod {
   id        String  @id @default(cuid())
   bookingId String  @unique
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   amount Decimal       @db.Decimal(10, 2)
   status PaymentStatus @default(PENDING)
@@ -132,10 +142,11 @@ model PaymentMethod {
   type          PaymentMethodType
   transactionId String?
   // gatewayResponse String?       // JSON response from payment gateway
+
   // Timestamps
-  paidAt        DateTime?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("payments")
 }
@@ -143,10 +154,10 @@ model PaymentMethod {
 model Review {
   id     String @id @default(cuid())
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
   rating    Int      @db.SmallInt // 1-5 stars
   comment   String?
@@ -167,7 +178,7 @@ model Coupon {
   maximumDiscount Decimal?     @db.Decimal(10, 2)
 
   usageLimit Int?
-  usedCount  Int  @default(0)
+  usedCount  Int @default(0)
 
   isActive  Boolean  @default(true)
   startDate DateTime
@@ -181,7 +192,7 @@ model Coupon {
 
 model PasswordResetToken {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   token     String   @unique
   expiresAt DateTime
@@ -189,6 +200,18 @@ model PasswordResetToken {
   used      Boolean  @default(false)
 
   @@map("password_reset_tokens")
+}
+
+model BookingStatusHistory {
+  id        String        @id @default(cuid())
+  bookingId String
+  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  status    BookingStatus
+  changedBy String? // User ID who changed the status
+  reason    String?
+  createdAt DateTime      @default(now())
+
+  @@map("booking_status_history")
 }
 
 enum UserRole {
@@ -244,18 +267,6 @@ enum PaymentStatus {
   FAILED
   CANCELLED
   REFUNDED
-}
-
-model BookingStatusHistory {
-  id        String        @id @default(cuid())
-  bookingId String
-  booking   Booking       @relation(fields: [bookingId], references: [id])
-  status    BookingStatus
-  changedBy String? // User ID who changed the status
-  reason    String?
-  createdAt DateTime      @default(now())
-
-  @@map("booking_status_history")
 }
 
 enum PaymentMethodType {

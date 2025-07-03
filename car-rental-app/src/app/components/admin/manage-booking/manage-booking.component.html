@@ -91,10 +91,10 @@
         <td class="px-6 py-4">
           <div class="flex items-center gap-3">
             <img
-              [src]="booking.vehicle?.images?.[0]?.url || '/assets/default-car.jpg'"
+              [src]="booking.vehicle?.images?.[0]?.url || ''"
               [alt]="getCarDisplayName(booking.vehicle)"
               class="h-16 w-20 object-cover rounded-lg"
-              onerror="this.src='/assets/default-car.jpg'"
+              onerror=""
             />
             <div>
               <div class="font-medium text-gray-900">{{ booking.vehicle?.make || 'N/A' }}</div>
