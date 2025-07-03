@@ -9,7 +9,6 @@ import {
   UsePipes,
   ValidationPipe,
   UseGuards,
-
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { Vehicle } from './interfaces/vehicle.interface';
@@ -101,6 +100,20 @@ export class VehiclesController {
     @Body() updateVehicleDto: UpdateVehiclesDto,
   ): Promise<Vehicle> {
     return this.vehiclesService.update(id, updateVehicleDto);
+  }
+
+  @Patch(':id/availability')
+  @ApiResponse({ status: 404, description: 'Vehicle not found' })
+  @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.AGENT, UserRole.ADMIN)
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({ summary: 'Update a vehicle by ID' })
+  updateAvailability(
+    @Param('id') id: string,
+    @Body() body: { isAvailable: boolean },
+  ) {
+    return this.vehiclesService.updateAvailability(id, body.isAvailable);
   }
 
   @Delete(':id')

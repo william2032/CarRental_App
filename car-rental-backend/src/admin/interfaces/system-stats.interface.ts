@@ -3,7 +3,8 @@ export interface SystemStats {
   totalAgents: number;
   totalCustomers: number;
   totalVehicles: number;
-  activeBookings: number;
+  totalBookings: number;
+  pendingBookings: number;
   completedBookings: number;
   totalRevenue: number;
 }

@@ -20,7 +20,8 @@ export class AdminService {
       totalAgents,
       totalCustomers,
       totalVehicles,
-      activeBookings,
+      totalBookings,
+      pendingBookings,
       completedBookings,
       totalRevenueResult,
     ] = await Promise.all([
@@ -28,9 +29,15 @@ export class AdminService {
       this.prisma.user.count({ where: { role: UserRole.AGENT } }),
       this.prisma.user.count({ where: { role: UserRole.CUSTOMER } }),
       this.prisma.vehicle.count(),
+      this.prisma.booking.count(),
       this.prisma.booking.count({ where: { status: 'CONFIRMED' } }),
       this.prisma.booking.count({ where: { status: 'PENDING' } }),
-      this.prisma.paymentMethod.aggregate({ _sum: { amount: true } }),
+      this.prisma.booking.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          status: { in: ['CONFIRMED'] },
+        },
+      }),
     ]);
 
     return {
@@ -38,9 +45,10 @@ export class AdminService {
       totalAgents,
       totalCustomers,
       totalVehicles,
-      activeBookings,
+      totalBookings,
+      pendingBookings,
       completedBookings,
-      totalRevenue: totalRevenueResult._sum.amount?.toNumber() || 0,
+      totalRevenue: totalRevenueResult._sum.totalAmount?.toNumber() || 0,
     };
   }
 

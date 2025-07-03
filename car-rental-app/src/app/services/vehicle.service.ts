@@ -29,7 +29,7 @@ export class VehicleService {
   }
 
   toggleAvailability(id: string, isAvailable: boolean): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/vehicles/${id}/availability`, {
+    return this.http.patch(`${this.apiUrl}/${id}/availability`, {
       isAvailable,
     }, { headers: this.getHeaders() });
   }

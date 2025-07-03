@@ -1,6 +1,5 @@
 import { $Enums, Prisma } from '../../../generated/prisma';
 
-// Import enums from Prisma
 import PaymentStatus = $Enums.PaymentStatus;
 import BookingStatus = $Enums.BookingStatus;
 import BookingType = $Enums.BookingType;

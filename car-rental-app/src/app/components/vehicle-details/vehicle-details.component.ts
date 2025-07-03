@@ -139,12 +139,17 @@ export class VehicleDetailsComponent {
       },
       error: (error) => {
         this.isBooking = false;
-        if (error.message === 'User not authenticated') {
+        const serverMessage = error?.error?.message || error.message || 'Unknown error';
+
+        if (serverMessage === 'User not authenticated') {
           this.errorMessage = 'Please log in to make a booking. You will be redirected to the login page.';
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 1500);
-        } else {
+        } else if (serverMessage === 'Vehicle is not available for booking') {
+          this.errorMessage = 'Sorry already booked!';
+        }
+        else {
           this.errorMessage = error.message || 'Failed to create booking. Please try again.';
         }
       }

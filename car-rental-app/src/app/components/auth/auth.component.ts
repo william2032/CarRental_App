@@ -1,11 +1,9 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {
-  AuthService
-} from '../../services/auth.service';
+import {AuthService} from '../../services/auth.service';
 import {NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {
   ForgotPasswordRequest,
@@ -176,8 +174,12 @@ export class AuthComponent implements OnInit, OnDestroy {
             // Redirect to dashboard or previous page
           },
           error: (error) => {
+
             this.isLoading = false;
-            this.errorMessage = error.message;
+            this.errorMessage ='Login failed. Please try again.';
+            this.router.navigate(['/login']);
+            // alert('Login failed. Please try again.');
+            this.clearMessages();
           }
         });
     }
@@ -208,7 +210,7 @@ export class AuthComponent implements OnInit, OnDestroy {
             // Redirect to dashboard or previous page
             setTimeout(() => {
               this.router.navigate(['/']);
-            }, 1000);
+            }, 1500);
           },
           error: (error) => {
             this.isLoading = false;

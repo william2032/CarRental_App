@@ -16,19 +16,13 @@
         <a routerLink="/about-us" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</a>
       </nav>
 
-      <!-- Search and Actions -->
       <div class="flex items-center space-x-6">
         <button
           *ngIf="!isLoggedIn"  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
           <span  (click)="navigateToLogin()">Sign In</span>
         </button>
-          <button
-            *ngIf="isLoggedIn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium transition-colors">
-            <span  (click)="navigateToLogin()">Dashboard</span>
-          </button>
-          <span *ngIf="isLoggedIn" (click)="logout()" class="cursor-pointer font-montserrat">Log Out</span>
-
-
+        <span *ngIf="isLoggedIn" class="text-blue-400 px-4 py-2 font-montserrat cursor-pointer rounded-lg font-medium">Welcome Back, {{userName}}</span>
+        <span *ngIf="isLoggedIn" (click)="logout()" class="bg-transparent border border-gray-400 px-3 py-2 rounded-lg cursor-pointer font-montserrat hover:bg-gray-100 transition-colors font-semibold text-[12px]">Log Out</span>
 
         <!-- Mobile menu button -->
         <button class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">

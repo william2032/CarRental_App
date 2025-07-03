@@ -15,6 +15,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private userSubscription?: Subscription;
   userEmail: string | null = null;
+  userName: string | null = null;
   isLoggedIn: boolean = false;
   showLogoutModal = false;
 
@@ -24,6 +25,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService) {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.userEmail = user?.email || null;
+      this.userName = user?.name ? user.name.split(' ')[0] : null;
       this.isLoggedIn = !!user && this.authService.isLoggedIn();
     });
   }

@@ -18,20 +18,12 @@ interface HeroImage {
 export class HeroSectionComponent implements OnInit, OnDestroy {
   @ViewChild('heroSection', {static: true}) heroSection!: ElementRef;
 
-  constructor( private router: Router) {}
+  constructor(private router: Router) {
+  }
+
   currentImageIndex = 0;
   scrollProgress = 0;
   heroImages: HeroImage[] = [
-    {
-      url: 'https://images.unsplash.com/photo-1550355191-aa8a80b41353?w=1920&h=1080&fit=crop',
-      title: 'Luxury Sports Cars',
-      subtitle: 'Experience the thrill of premium vehicles'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920&h=1080&fit=crop',
-      title: 'Classic Collection',
-      subtitle: 'Timeless elegance meets modern comfort'
-    },
     {
       url: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1920&h=1080&fit=crop',
       title: 'Adventure Vehicles',
@@ -42,6 +34,13 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
       title: 'Urban Mobility',
       subtitle: 'Perfect for city exploration'
     },
+    {
+      url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920&h=1080&fit=crop',
+      title: 'Classic Collection',
+      subtitle: 'Timeless elegance meets modern comfort'
+    },
+
+
     {
       url: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=1920&h=1080&fit=crop',
       title: 'Electric Future',
@@ -130,6 +129,7 @@ export class HeroSectionComponent implements OnInit, OnDestroy {
   getContentOpacity(): number {
     return Math.max(0.7, 1 - this.scrollProgress * 0.3);
   }
+
   navigateToAllVehicles(): void {
     this.router.navigate(['/all-vehicles']);
   }

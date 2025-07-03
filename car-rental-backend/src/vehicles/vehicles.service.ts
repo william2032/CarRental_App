@@ -60,6 +60,13 @@ export class VehiclesService {
     });
   }
 
+  async updateAvailability(id: string, isAvailable: boolean) {
+    return this.prisma.vehicle.update({
+      where: { id },
+      data: { isAvailable },
+    });
+  }
+
   async findOne(id: string): Promise<Vehicle> {
     const vehicle = await this.prisma.vehicle.findUnique({
       where: { id },

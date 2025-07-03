@@ -70,7 +70,7 @@ export class AuthService {
         tap(response => {
           this.setSession(response);
         }),
-        catchError(this.handleError)
+        catchError(this.handleError || 'Invalid login. Please try again!')
       );
   }
 
@@ -151,14 +151,6 @@ export class AuthService {
   }
 
   private handleError(error: any): Observable<never> {
-    let errorMessage = 'An error occurred';
-
-    if (error.error?.message) {
-      errorMessage = error.error.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => error);
   }
 }
