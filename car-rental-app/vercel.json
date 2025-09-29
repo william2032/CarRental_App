@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "angular",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/car-rental-app",
+  "outputDirectory": "dist/car-rental-app/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
