@@ -10,7 +10,11 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: ['http://localhost:4200'],
+    origin: [
+      'http://localhost:4200',
+      'https://carrental-app-wfth.onrender.com',
+      /\.vercel\.app$/,
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -48,7 +52,7 @@ async function bootstrap() {
   const port = configService.get('PORT') || 3000;
   await app.listen(port);
 
-  console.log(`Car Rental API is running on: http://localhost:${port}`);
+  console.log(`SendIt API is running on: http://localhost:${port}`);
   console.log(`Swagger docs available at: http://localhost:${port}/api/docs`);
 }
 

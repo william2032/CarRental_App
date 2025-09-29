@@ -19,6 +19,7 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
+  @IsNotEmpty()
   @IsString()
   phone: string;
 
@@ -26,6 +27,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(3, { message: 'Name must be at least 3 characters' })
   name: string;
+
   @IsOptional()
   @IsString()
   profilePicture?: string;
